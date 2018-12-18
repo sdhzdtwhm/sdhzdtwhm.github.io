@@ -30,9 +30,9 @@
       
         <tags>
             
-            <tag> mysql </tag>
-            
             <tag> xtrabackup </tag>
+            
+            <tag> mysql </tag>
             
         </tags>
       
