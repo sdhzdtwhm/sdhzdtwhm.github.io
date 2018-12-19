@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN,default">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.6.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.6.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.6.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.6.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1 概述 本文档用于搭建impala开发测试环境,配置yarn-ha和hdfs-ha">
+<meta name="keywords" content="大数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cdh5.11.2快速配置文档">
+<meta property="og:url" content="https://sdhzdtwhm.github.io/2018/12/01/CDH5.11.2快速配置文档/index.html">
+<meta property="og:site_name" content="杨航的博客">
+<meta property="og:description" content="1 概述 本文档用于搭建impala开发测试环境,配置yarn-ha和hdfs-ha">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf264d38a04d.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254287aa49.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254492b4f6.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf25444a77b0.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf25448ea480.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf25444a71c2.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254492ae14.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254427981e.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254427d480.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254494548d.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf2545398978.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254a20c149.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254a4398f8.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254ad52bc3.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254ad522e4.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254a5bcbaf.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254c9b8126.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254c74d512.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254c9b74c7.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254cb93962.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254cc5cfc7.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf254a2c3510.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf261d74f247.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/19/5bf261d74f247.png">
+<meta property="og:updated_time" content="2018-12-19T02:22:11.940Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cdh5.11.2快速配置文档">
+<meta name="twitter:description" content="1 概述 本文档用于搭建impala开发测试环境,配置yarn-ha和hdfs-ha">
+<meta name="twitter:image" content="https://i.loli.net/2018/11/19/5bf264d38a04d.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="杨航的博客" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="https://sdhzdtwhm.github.io/2018/12/01/CDH5.11.2快速配置文档/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>cdh5.11.2快速配置文档 | 杨航的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">杨航的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://sdhzdtwhm.github.io/2018/12/01/CDH5.11.2快速配置文档/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="杨航">
+      <meta itemprop="description" content="所有的伟大，都源于一个勇敢的开始。">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杨航的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">cdh5.11.2快速配置文档
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-12-01 11:30:06" itemprop="dateCreated datePublished" datetime="2018-12-01T11:30:06+08:00">2018-12-01</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-12-19 10:22:11" itemprop="dateModified" datetime="2018-12-19T10:22:11+08:00">2018-12-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+          
+            <span class="post-meta-divider">|</span>
+            <span id="busuanzi_value_page_pv"></span>次阅读
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-概述"><a href="#1-概述" class="headerlink" title="1 概述"></a>1 概述</h1><blockquote>
+<p>本文档用于搭建impala开发测试环境,配置yarn-ha和hdfs-ha</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="2-服务器规划配置"><a href="#2-服务器规划配置" class="headerlink" title="2 服务器规划配置"></a>2 服务器规划配置</h1><blockquote>
+<p>具体请参考excel文档的部署规划sheet</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/19/5bf264d38a04d.png" alt="东方通impala环境.png" title="东方通impala环境.png"></center>
+
+<h1 id="3-部署软件版本和下载地址"><a href="#3-部署软件版本和下载地址" class="headerlink" title="3 部署软件版本和下载地址"></a>3 部署软件版本和下载地址</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mysql5.7.24:</span><br><span class="line">cdh相关软件下载地址：</span><br><span class="line">http://archive.cloudera.com/cm5/cm/5/cloudera-manager-centos7-cm5.11.2_x86_64.tar.gz</span><br><span class="line">http://archive.cloudera.com/cdh5/parcels/5.11.2.4/CDH-5.11.2-1.cdh5.11.2.p0.4-el7.parcel</span><br><span class="line">http://archive.cloudera.com/cdh5/parcels/5.11.2.4/CDH-5.11.2-1.cdh5.11.2.p0.4-el7.parcel.sha1  注：修改文件名称把sha1中的1去掉</span><br><span class="line">http://archive.cloudera.com/cdh5/parcels/5.11.2.4/manifest.json</span><br><span class="line"></span><br><span class="line">jdk-8u144-linux-x64</span><br><span class="line">nginx1.14</span><br><span class="line">ansible</span><br><span class="line">sshpass用法：</span><br><span class="line">sshpass -p &apos;1w98.77B32&apos; ssh -o StrictHostKeyChecking=no root@168.1.2.180 &quot;hostnamectl set-hostname gxjh01&quot;</span><br></pre></td></tr></table></figure>
+<h1 id="4-配置"><a href="#4-配置" class="headerlink" title="4 配置"></a>4 配置</h1><h2 id="4-1-安装配置管理工具ansible"><a href="#4-1-安装配置管理工具ansible" class="headerlink" title="4.1 安装配置管理工具ansible"></a>4.1 安装配置管理工具ansible</h2><blockquote>
+<p>此工具用于批量配置管理服务器</p>
+</blockquote>
+<h3 id="4-1-1-安装"><a href="#4-1-1-安装" class="headerlink" title="4.1.1 安装"></a>4.1.1 安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install ansible -y</span><br></pre></td></tr></table></figure>
+<h3 id="4-1-2-修改配置文件"><a href="#4-1-2-修改配置文件" class="headerlink" title="4.1.2 修改配置文件"></a>4.1.2 修改配置文件</h3><blockquote>
+<p>修改/etc/ansible/ansible.cfg，解掉注释<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">host_key_checking = False</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="4-1-3-配置ansible组"><a href="#4-1-3-配置ansible组" class="headerlink" title="4.1.3 配置ansible组"></a>4.1.3 配置ansible组</h3><blockquote>
+<p>编辑/etc/ansible/hosts</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[cdh]</span><br><span class="line">168.1.2.180    ansible_ssh_user=root ansible_ssh_pass=1w98.77B32</span><br><span class="line">168.1.2.181    ansible_ssh_user=root ansible_ssh_pass=1w98.77B32</span><br><span class="line">168.1.2.182    ansible_ssh_user=root ansible_ssh_pass=1w98.77B32</span><br><span class="line">168.1.2.183    ansible_ssh_user=root ansible_ssh_pass=1w98.77B32</span><br></pre></td></tr></table></figure>
+<h2 id="4-2-初始化服务器环境"><a href="#4-2-初始化服务器环境" class="headerlink" title="4.2 初始化服务器环境"></a>4.2 初始化服务器环境</h2><h3 id="4-2-1-执行脚本"><a href="#4-2-1-执行脚本" class="headerlink" title="4.2.1 执行脚本"></a>4.2.1 执行脚本</h3><blockquote>
+<p>关闭selinux，配置防火墙，配置ntp，添加sudo用户weihu，修改文件描述符，配置主机/etc/hosts文件。 在ansible中执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ansible cdh -m script -a &apos;/root/centos7_init.sh&apos; -f 5</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>cento7_init.sh<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"># Filename:    centos7_init.sh</span><br><span class="line"># Revision:    1.0</span><br><span class="line"># Date:        2016/12/15</span><br><span class="line"># Author:      YangHang</span><br><span class="line"># Email:       13716320887@139.com</span><br><span class="line"># Website:     no</span><br><span class="line"># Description: centos7系统初始化</span><br><span class="line"></span><br><span class="line">#1.定义配置yum源函数--(注：若程序不能联网，则需要配置本地yum源，将地址指向此处)</span><br><span class="line">function yum()&#123;</span><br><span class="line">touch /etc/yum.repos.d/mysql5.7.repo</span><br><span class="line">cat &gt; /etc/yum.repos.d/mysql5.7.repo &lt;&lt; EOF</span><br><span class="line">[mysql5.7]</span><br><span class="line">name=mysql5.7</span><br><span class="line">baseurl=https://mirrors.tuna.tsinghua.edu.cn/mysql/yum/mysql57-community-el7/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">EOF</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#2.定义配置NTP函数</span><br><span class="line">function ntp()&#123;</span><br><span class="line">/usr/bin/yum -y install ntp</span><br><span class="line">#修改配置文件</span><br><span class="line">echo &apos;&apos; &gt;/etc/ntp.conf</span><br><span class="line">cat &gt;&gt;/etc/ntp.conf &lt;&lt; EOF</span><br><span class="line">driftfile /var/lib/ntp/drift</span><br><span class="line">restrict default nomodify notrap nopeer noquery</span><br><span class="line">restrict 127.0.0.1 </span><br><span class="line">restrict ::1</span><br><span class="line">server ntp1.aliyun.com</span><br><span class="line">server ntp2.aliyun.com</span><br><span class="line">server ntp3.aliyun.com</span><br><span class="line">server ntp4.aliyun.com</span><br><span class="line">server ntp5.aliyun.com</span><br><span class="line">includefile /etc/ntp/crypto/pw</span><br><span class="line">keys /etc/ntp/keys</span><br><span class="line">disable monitor</span><br><span class="line">EOF</span><br><span class="line">#同步hwclock</span><br><span class="line">cat &gt;&gt;/etc/sysconfig/ntpd&lt;&lt;EOF</span><br><span class="line">#Command line options for ntpd</span><br><span class="line">SYNC_HWCLOCK=yes</span><br><span class="line">OPTIONS=&quot;-g&quot;</span><br><span class="line">EOF</span><br><span class="line">#使用ntpdate命令校验时间</span><br><span class="line">/usr/sbin/ntpdate ntp2.aliyun.com &amp;&amp; /usr/sbin/hwclock -w</span><br><span class="line">/usr/bin/systemctl stop chronyd &amp;&gt; /dev/null</span><br><span class="line">/usr/bin/systemctl disable chronyd &amp;&gt; /dev/null</span><br><span class="line">/usr/bin/systemctl start ntpd &amp;&gt; /dev/null</span><br><span class="line">/usr/bin/systemctl enable ntpd &amp;&gt; /dev/null</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#3.定义关闭防火墙函数  如果机房漏扫建议将防火墙开启，此函数不执行</span><br><span class="line">function close_firewalld()&#123;</span><br><span class="line">    /usr/bin/systemctl stop firewalld.service &amp;&gt; /dev/null</span><br><span class="line">    /usr/bin/systemctl disable firewalld.service &amp;&gt; /dev/null</span><br><span class="line">&#125;</span><br><span class="line">#4.定义关闭selinux函数</span><br><span class="line">function close_selinux()&#123;</span><br><span class="line">    setenforce 0</span><br><span class="line">    sed -i &apos;s#SELINUX=enforcing#SELINUX=disabled#g&apos; /etc/selinux/config</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#5.调整文件描述符</span><br><span class="line">function optimization()&#123;</span><br><span class="line">echo &quot;* soft nofile 65536&quot; &gt;&gt; /etc/security/limits.conf</span><br><span class="line">echo &quot;* hard nofile 65536&quot; &gt;&gt; /etc/security/limits.conf</span><br><span class="line">echo &quot;* soft nproc 65536&quot; &gt;&gt; /etc/security/limits.conf</span><br><span class="line">echo &quot;* hard nproc 65536&quot; &gt;&gt; /etc/security/limits.conf</span><br><span class="line">&#125;</span><br><span class="line">#6.配置hosts</span><br><span class="line">function host()&#123;</span><br><span class="line">cat &gt;&gt; /etc/hosts &lt;&lt; EOF</span><br><span class="line">168.1.2.180    gxjh01</span><br><span class="line">168.1.2.181    gxjh02</span><br><span class="line">168.1.2.182    gxjh03</span><br><span class="line">168.1.2.183    gxjh04</span><br><span class="line">EOF</span><br><span class="line">&#125;</span><br><span class="line">#7.添加sudo-weihu用户</span><br><span class="line">function add_user()&#123;</span><br><span class="line">useradd weihu</span><br><span class="line">echo &quot;weihu@123!&quot;|passwd --stdin weihu</span><br><span class="line">history -c</span><br><span class="line">sed -i &apos;91a weihu  ALL=(ALL)      NOPASSWD:ALL&apos; /etc/sudoers</span><br><span class="line">&#125;</span><br><span class="line">#8.配置jdk环境变量 注：此处只是</span><br><span class="line">function jdk()&#123;</span><br><span class="line">cat &gt;&gt; /etc/profile &lt;&lt; EOF</span><br><span class="line">export JAVA_HOME=/usr/local/java/jdk1.8.0_144</span><br><span class="line">export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br><span class="line">export PATH=$JAVA_HOME/bin:$PATH</span><br><span class="line">EOF</span><br><span class="line">&#125;</span><br><span class="line">#9.优化cdh相关参数</span><br><span class="line">function cdh()&#123;</span><br><span class="line">echo never &gt; /sys/kernel/mm/transparent_hugepage/defrag</span><br><span class="line">echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled</span><br><span class="line">echo &quot;vm.swappiness = 10&quot; &gt;&gt; /etc/sysctl.conf</span><br><span class="line">/usr/sbin/sysctl -p</span><br><span class="line">&#125;</span><br><span class="line">#10.配置rc.local 开机自启动</span><br><span class="line">function rc()&#123;</span><br><span class="line">chmod +x /etc/rc.d/rc.local</span><br><span class="line">cat &gt;&gt; /etc/rc.d/rc.local &lt;&lt; EOF</span><br><span class="line">echo never &gt; /sys/kernel/mm/transparent_hugepage/defrag</span><br><span class="line">echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled</span><br><span class="line">#/opt/cm-5.11.2/etc/init.d/cloudera-scm-server restart</span><br><span class="line">/opt/cm-5.11.2/etc/init.d/cloudera-scm-agent restart</span><br><span class="line">EOF</span><br><span class="line">&#125;</span><br><span class="line">#11.服务器用户登录限制 禁止用户登录，禁止使用dns(有的时候会出现ssh和ftp登录时间很长)</span><br><span class="line">function ssh()&#123;</span><br><span class="line">sed -i &apos;s/#PermitRootLogin/PermitRootLogin/g&apos; /etc/ssh/sshd_config</span><br><span class="line">sed -i &quot;s/#UseDNS no/UseDNS no/g&quot; /etc/ssh/sshd_config</span><br><span class="line">systemctl restart sshd</span><br><span class="line">&#125;</span><br><span class="line">#初始化方法</span><br><span class="line">function init()&#123;</span><br><span class="line">    yum;</span><br><span class="line">    ntp;</span><br><span class="line">    close_firewalld;</span><br><span class="line">    close_selinux;</span><br><span class="line">    optimization;</span><br><span class="line">    host;</span><br><span class="line">    add_user;</span><br><span class="line">    jdk;</span><br><span class="line">    cdh;</span><br><span class="line">    rc;</span><br><span class="line">&#125;</span><br><span class="line">init</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="4-2-2-配置主机互信"><a href="#4-2-2-配置主机互信" class="headerlink" title="4.2.2 配置主机互信"></a>4.2.2 配置主机互信</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-- 各服务器执行ssh-keygen</span><br><span class="line">ansible cdh -m shell -a &quot;ssh-keygen -t rsa -P &apos;&apos; -f ~/.ssh/id_rsa&quot; -f 10</span><br><span class="line">-- 生成authorized_keys文件</span><br><span class="line">ansible cdh -m shell -a &quot;cat /root/.ssh/id_rsa.pub&quot; -f 10 &gt; /tmp/authorized_keys</span><br><span class="line">-- 去除多余的行</span><br><span class="line">sed -i &apos;/SUCCESS/d&apos; /tmp/authorized_keys</span><br><span class="line">-- 分发authorized_keys至每台服务器</span><br><span class="line">ansible cdh -m copy -a &quot;src=/tmp/authorized_keys dest=/root/.ssh/ owner=root group=root mode=0644&quot; -f 10</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-3-配置jdk"><a href="#4-2-3-配置jdk" class="headerlink" title="4.2.3 配置jdk"></a>4.2.3 配置jdk</h3><blockquote>
+<p>由于4.2.1 中脚本已包含配置环境变量，因此直接执行以下操作即可<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ansible cdh -m copy  -a &quot;src=/home/data/software/jdk-8u144-linux-x64.tar.gz dest=/root/jdk-8u144-linux-x64.tar.gz owner=root group=root mode=0644&quot; -f 10</span><br><span class="line">ansible cdh -m shell -a &quot;mkdir -p /usr/local/java/ &quot; -f 5</span><br><span class="line">ansible cdh -m shell -a &quot;tar -zxf /root/jdk-8u144-linux-x64.tar.gz -C /usr/local/java/ &quot; -f 5</span><br><span class="line"></span><br><span class="line">ansible cdh -m shell -a &quot;source /etc/profile&amp;&amp; java -version &quot; -f 5</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h2 id="4-3-配置mysql"><a href="#4-3-配置mysql" class="headerlink" title="4.3 配置mysql"></a>4.3 配置mysql</h2><blockquote>
+<p>mysql安装在168.1.2.180 服务器中</p>
+</blockquote>
+<h3 id="4-3-1-配置mysql5-7-repo"><a href="#4-3-1-配置mysql5-7-repo" class="headerlink" title="4.3.1 配置mysql5.7.repo"></a>4.3.1 配置mysql5.7.repo</h3><blockquote>
+<p>文件路径:/etc/yum.repos.d/<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[mysql5.7]</span><br><span class="line">name=mysql5.7</span><br><span class="line">baseurl=https://mirrors.tuna.tsinghua.edu.cn/mysql/yum/mysql57-community-el7/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="4-3-2-安装"><a href="#4-3-2-安装" class="headerlink" title="4.3.2 安装"></a>4.3.2 安装</h3><blockquote>
+<p>注：这些服务器安装了多余的包需先卸载掉：yum -y remove mariadb-libs<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yum -y install mysql-community-server</span><br><span class="line">mkdir -p /home/data/mysql/data</span><br><span class="line">mkdir -p /home/data/mysql/logs</span><br><span class="line">chown -R mysql:mysql /home/data/mysql</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="4-3-3-mysql配置文件"><a href="#4-3-3-mysql配置文件" class="headerlink" title="4.3.3 mysql配置文件"></a>4.3.3 mysql配置文件</h3><blockquote>
+<p>/etc/my.cnf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"># mysql配置文件</span><br><span class="line">[mysqld]</span><br><span class="line">socket = /var/lib/mysql/mysql.sock</span><br><span class="line">#禁止域名解析</span><br><span class="line">skip-name-resolve</span><br><span class="line">#数据目录</span><br><span class="line">datadir=/home/data/mysql/data</span><br><span class="line">#mysql的server-id</span><br><span class="line">server-id=249</span><br><span class="line">#超时时间</span><br><span class="line">wait_timeout=100</span><br><span class="line">interactive_timeout=100</span><br><span class="line">### binlog设置 ###</span><br><span class="line"># binlog日志设置</span><br><span class="line"># 不强制限制存储函数创建,这个变量也适用于触发器创建</span><br><span class="line">log_bin_trust_function_creators = 1</span><br><span class="line"># binlog存储地址</span><br><span class="line">log_bin = /home/data/mysql/logs/mysql-bin</span><br><span class="line"># binlog格式</span><br><span class="line">binlog_format = row</span><br><span class="line"># binlog过期时间</span><br><span class="line">expire-logs-days = 7</span><br><span class="line"># binlog缓存日志</span><br><span class="line">binlog_cache_size = 2M</span><br><span class="line"># 自增初始值</span><br><span class="line">auto_increment_offset = 1</span><br><span class="line"># 自增间隔</span><br><span class="line">auto_increment_increment = 2 </span><br><span class="line"># 错误日志配置</span><br><span class="line">log_error = /home/data/mysql/logs/mysql-error.log</span><br><span class="line"># 慢日志配置</span><br><span class="line">slow_query_log = 1</span><br><span class="line">slow_query_log_file = /home/data/mysql/logs/mysql-slow.log</span><br><span class="line">long_query_time = 5</span><br><span class="line">### innodb ###</span><br><span class="line">innodb_write_io_threads = 32</span><br><span class="line">innodb_read_io_threads = 32</span><br><span class="line">innodb_buffer_pool_size = 1G</span><br><span class="line">innodb_file_per_table = 1</span><br><span class="line">innodb_log_file_size = 50M</span><br><span class="line">innodb_log_buffer_size = 64M</span><br><span class="line">### 优化配置 ###</span><br><span class="line">max_connections = 1024</span><br><span class="line">max_connect_errors = 1000</span><br><span class="line">lower_case_table_names = 1</span><br><span class="line">key_buffer_size = 64M</span><br><span class="line">table_open_cache = 6144</span><br><span class="line">table_definition_cache = 4096</span><br><span class="line">sort_buffer_size = 512K</span><br><span class="line">read_buffer_size = 512K</span><br><span class="line">join_buffer_size = 512K</span><br><span class="line">tmp_table_size = 64M</span><br><span class="line">max_heap_table_size = 64M</span><br><span class="line"># 接收的数据包大小</span><br><span class="line">max_allowed_packet = 1024M</span><br><span class="line">#mysql5.6和mysql5.7默认的sql_mode不一样</span><br><span class="line">#sql_mode = STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION</span><br><span class="line"># 开启查询缓存</span><br><span class="line">explicit_defaults_for_timestamp=true</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="4-3-4-初始化mysql库"><a href="#4-3-4-初始化mysql库" class="headerlink" title="4.3.4 初始化mysql库"></a>4.3.4 初始化mysql库</h3><blockquote>
+<p>初始化mysql库<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld --initialize-insecure --user=mysql</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="4-3-5-启动mysql"><a href="#4-3-5-启动mysql" class="headerlink" title="4.3.5 启动mysql"></a>4.3.5 启动mysql</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl start mysqld</span><br><span class="line">systemctl enable mysqld</span><br></pre></td></tr></table></figure>
+<h3 id="4-3-6-执行mysql-secure-installation"><a href="#4-3-6-执行mysql-secure-installation" class="headerlink" title="4.3.6 执行mysql_secure_installation"></a>4.3.6 执行mysql_secure_installation</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mysql_secure_installation</span><br><span class="line"></span><br><span class="line">Securing the MySQL server deployment.</span><br><span class="line"></span><br><span class="line">Connecting to MySQL using a blank password.</span><br><span class="line"></span><br><span class="line">VALIDATE PASSWORD PLUGIN can be used to test passwords</span><br><span class="line">and improve security. It checks the strength of password</span><br><span class="line">and allows the users to set only those passwords which are</span><br><span class="line">secure enough. Would you like to setup VALIDATE PASSWORD plugin?</span><br><span class="line"></span><br><span class="line">Press y|Y for Yes, any other key for No: n</span><br><span class="line">Please set the password for root here.</span><br><span class="line"></span><br><span class="line">New password: </span><br><span class="line"></span><br><span class="line">Re-enter new password: </span><br><span class="line">By default, a MySQL installation has an anonymous user,</span><br><span class="line">allowing anyone to log into MySQL without having to have</span><br><span class="line">a user account created for them. This is intended only for</span><br><span class="line">testing, and to make the installation go a bit smoother.</span><br><span class="line">You should remove them before moving into a production</span><br><span class="line">environment.</span><br><span class="line"></span><br><span class="line">Remove anonymous users? (Press y|Y for Yes, any other key for No) : Y</span><br><span class="line">Success.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Normally, root should only be allowed to connect from</span><br><span class="line">&apos;localhost&apos;. This ensures that someone cannot guess at</span><br><span class="line">the root password from the network.</span><br><span class="line"></span><br><span class="line">Disallow root login remotely? (Press y|Y for Yes, any other key for No) : y</span><br><span class="line">Success.</span><br><span class="line"></span><br><span class="line">By default, MySQL comes with a database named &apos;test&apos; that</span><br><span class="line">anyone can access. This is also intended only for testing,</span><br><span class="line">and should be removed before moving into a production</span><br><span class="line">environment.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y</span><br><span class="line"> - Dropping test database...</span><br><span class="line">Success.</span><br><span class="line"></span><br><span class="line"> - Removing privileges on test database...</span><br><span class="line">Success.</span><br><span class="line"></span><br><span class="line">Reloading the privilege tables will ensure that all changes</span><br><span class="line">made so far will take effect immediately.</span><br><span class="line"></span><br><span class="line">Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y</span><br><span class="line">Success.</span><br><span class="line"></span><br><span class="line">All done! </span><br><span class="line">[root@localhost ~]#</span><br></pre></td></tr></table></figure>
+<h3 id="4-3-7-创建hive库"><a href="#4-3-7-创建hive库" class="headerlink" title="4.3.7 创建hive库"></a>4.3.7 创建hive库</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CREATE DATABASE `hive` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;</span><br></pre></td></tr></table></figure>
+<h2 id="4-4-配置CDH"><a href="#4-4-配置CDH" class="headerlink" title="4.4 配置CDH"></a>4.4 配置CDH</h2><blockquote>
+<p>CDH包含server和agent两个，server用于管理，agent用于承载各种角色服务，本次规划使用在gxjh01上配置server+agent，另外三台运行agent</p>
+</blockquote>
+<h3 id="4-4-1-配置cm-server"><a href="#4-4-1-配置cm-server" class="headerlink" title="4.4.1 配置cm-server"></a>4.4.1 配置cm-server</h3><blockquote>
+<p>在gxjh01服务器上执行，由于服务器中存储空间大不放在/home/目录中，考虑到cdh默认在/opt目录下因此，使用软链接将/opt/cloudera 和/opt/cm-11.2目录链接到/home/data/cloudera 和/home/data/cm-11.2下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#初始化安装文件</span><br><span class="line">tar zxvf cloudera-manager-centos7-cm5.11.2_x86_64.tar.gz -C /home/data/</span><br><span class="line">mkdir -p /opt/cloudera/parcel-repo/</span><br><span class="line">#添加软连接</span><br><span class="line">ln -s /home/data/cloudera /opt/cloudera</span><br><span class="line">ln -s /home/data/cm-5.11.2 /opt/cm-5.11.2</span><br><span class="line">chmod 777 /home/data/software/mysql-connector-java-5.1.39-bin.jar</span><br><span class="line"></span><br><span class="line">cp /home/data/software/mysql-connector-java-5.1.39-bin.jar /opt/cm-5.11.2/share/cmf/lib/mysql-connector-java.jar</span><br><span class="line">mv CDH-5.11.2-1.cdh5.11.2.p0.4-el7.parcel.sha1 CDH-5.11.2-1.cdh5.11.2.p0.4-el7.parcel.sha</span><br><span class="line">mv CDH-5.11.2-1.cdh5.11.2.p0.4-el7.parcel* /opt/cloudera/parcel-repo/</span><br><span class="line">mv manifest.json /opt/cloudera/parcel-repo/</span><br><span class="line"></span><br><span class="line">#添加用户</span><br><span class="line">useradd --system --home=/opt/cm-5.11.2/run/cloudera-scm-server/ --no-create-home --shell=/bin/false --comment &quot;Cloudera SCM User&quot; cloudera-scm</span><br><span class="line">#初始化cm库</span><br><span class="line">update user set Grant_priv=&apos;Y&apos; where user=&apos;weihu&apos; and Host=&apos;%&apos;;</span><br><span class="line">/opt/cm-5.11.2/share/cmf/schema/scm_prepare_database.sh mysql cm -hlocalhost -uweihu -pweihu123 --scm-host % scm scm scm</span><br><span class="line"></span><br><span class="line">mkdir -p /var/lib/cloudera-scm-server</span><br><span class="line">chown cloudera-scm:cloudera-scm /var/lib/cloudera-scm-server</span><br><span class="line">#修改agent链接的配置文件/opt/cm-5.11.2/etc/cloudera-scm-agent/config.ini</span><br><span class="line">server_host=gxjh01</span><br><span class="line">#启动：</span><br><span class="line">/opt/cm-5.11.2/etc/init.d/cloudera-scm-server restart</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="4-4-2-配置cm-agent配置"><a href="#4-4-2-配置cm-agent配置" class="headerlink" title="4.4.2 配置cm-agent配置"></a>4.4.2 配置cm-agent配置</h3><blockquote>
+<p>将ansible配置组中gxjh01服务器注释掉</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">### 配置用户</span><br><span class="line">### 拷贝安装文件</span><br><span class="line">ansible cdh -m copy -a &quot;src=/opt/cm-5.11.2.tar.gz dest=/root/ owner=root group=root mode=0644&quot; -f 4</span><br><span class="line">#创建文件夹</span><br><span class="line">ansible cdh -m shell -a &quot;mkdir -p /home/data&quot; -f 4</span><br><span class="line">ansible cdh -m shell -a &quot;mkdir -p /home/data/cloudera&quot; -f 4</span><br><span class="line">#解压文件</span><br><span class="line">ansible cdh -m shell -a &quot;tar -xf /root/cm-5.11.2.tar.gz -C /home/data&quot; -f 4</span><br><span class="line">#做软连接</span><br><span class="line">ansible cdh -m shell -a &quot;ln -s /home/data/cloudera /opt/cloudera&quot; -f 4</span><br><span class="line">ansible cdh -m shell -a &quot;ln -s /home/data/cm-5.11.2 /opt/cm-5.11.2&quot; -f 4</span><br><span class="line">#配置用户</span><br><span class="line">ansible cdh -m shell -a &apos;useradd --system --home=/opt/cm-5.11.2/run/cloudera-scm-server/ --no-create-home --shell=/bin/false --comment &quot;Cloudera SCM User&quot; cloudera-scm&apos; -f 10</span><br></pre></td></tr></table></figure>
+<h3 id="4-4-3-启动agent和开机自启动"><a href="#4-4-3-启动agent和开机自启动" class="headerlink" title="4.4.3 启动agent和开机自启动"></a>4.4.3 启动agent和开机自启动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#启动：</span><br><span class="line">/opt/cm-5.11.2/etc/init.d/cloudera-scm-agent start</span><br><span class="line">#开机自启动：</span><br><span class="line">chmod +x /etc/rc.d/rc.local</span><br><span class="line">#添加如下：</span><br><span class="line">/opt/cm-5.11.2/etc/init.d/cloudera-scm-agent restart</span><br></pre></td></tr></table></figure>
+<h3 id="4-4-4-登陆cm-server控制台，配置集群"><a href="#4-4-4-登陆cm-server控制台，配置集群" class="headerlink" title="4.4.4 登陆cm-server控制台，配置集群"></a>4.4.4 登陆cm-server控制台，配置集群</h3><h4 id="4-4-4-1-登陆控制台"><a href="#4-4-4-1-登陆控制台" class="headerlink" title="4.4.4.1 登陆控制台"></a>4.4.4.1 登陆控制台</h4><blockquote>
+<p><a href="http://168.1.2.180:7180" target="_blank" rel="noopener">http://168.1.2.180:7180</a>    用户名：admin 密码：admin</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/19/5bf254287aa49.png" alt="01.png" title="01.png"> </center>
+
+<h4 id="4-4-4-2-登陆控制台"><a href="#4-4-4-2-登陆控制台" class="headerlink" title="4.4.4.2 登陆控制台"></a>4.4.4.2 登陆控制台</h4><blockquote>
+<p>接受协议</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/19/5bf254492b4f6.png" alt="02.png" title="02.png"> </center>
+
+<h4 id="4-4-4-3-选择所要安装的版本"><a href="#4-4-4-3-选择所要安装的版本" class="headerlink" title="4.4.4.3 选择所要安装的版本"></a>4.4.4.3 选择所要安装的版本</h4><blockquote>
+<p>选择免费版本</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/19/5bf25444a77b0.png" alt="03.png" title="03.png"> </center>
+
+<h4 id="4-4-4-4-弹出下图"><a href="#4-4-4-4-弹出下图" class="headerlink" title="4.4.4.4 弹出下图"></a>4.4.4.4 弹出下图</h4><center><img src="https://i.loli.net/2018/11/19/5bf25448ea480.png" alt="04.png" title="04.png"> </center>
+
+<h4 id="4-4-4-5-选择待安装的主机"><a href="#4-4-4-5-选择待安装的主机" class="headerlink" title="4.4.4.5 选择待安装的主机"></a>4.4.4.5 选择待安装的主机</h4><blockquote>
+<p>根据实际需求选择相应主机</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/19/5bf25444a71c2.png" alt="05.png" title="05.png"> </center>
+
+<h4 id="4-4-4-6-弹出下图点击继续"><a href="#4-4-4-6-弹出下图点击继续" class="headerlink" title="4.4.4.6 弹出下图点击继续"></a>4.4.4.6 弹出下图点击继续</h4><center><img src="https://i.loli.net/2018/11/19/5bf254492ae14.png" alt="06.png" title="06.png"> </center>
+
+<h4 id="4-4-4-7-弹出下图点击继续"><a href="#4-4-4-7-弹出下图点击继续" class="headerlink" title="4.4.4.7 弹出下图点击继续"></a>4.4.4.7 弹出下图点击继续</h4><center><img src="https://i.loli.net/2018/11/19/5bf254427981e.png" alt="07.png" title="07.png"> </center>
+
+<h4 id="4-4-4-8-弹出下图点击继续"><a href="#4-4-4-8-弹出下图点击继续" class="headerlink" title="4.4.4.8 弹出下图点击继续"></a>4.4.4.8 弹出下图点击继续</h4><center><img src="https://i.loli.net/2018/11/19/5bf254427d480.png" alt="08.png" title="08.png"> </center>
+
+<h4 id="4-4-4-9-弹出下图点击继续"><a href="#4-4-4-9-弹出下图点击继续" class="headerlink" title="4.4.4.9 弹出下图点击继续"></a>4.4.4.9 弹出下图点击继续</h4><center><img src="https://i.loli.net/2018/11/19/5bf254494548d.png" alt="09.png" title="09.png"> </center>
+
+<h4 id="4-4-4-10-选择自定义角色安装"><a href="#4-4-4-10-选择自定义角色安装" class="headerlink" title="4.4.4.10 选择自定义角色安装"></a>4.4.4.10 选择自定义角色安装</h4><blockquote>
+<p>hdfs+yarn+zookeeper+hive+impala</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/19/5bf2545398978.png" alt="10.png" title="10.png"> </center>
+
+<h4 id="4-4-4-11-为每个角色选择主机"><a href="#4-4-4-11-为每个角色选择主机" class="headerlink" title="4.4.4.11 为每个角色选择主机"></a>4.4.4.11 为每个角色选择主机</h4><blockquote>
+<p>原则上namenode和datanode不得在同一台，resourcemanager角色单独在一台机器上，由于此次只有四台服务器，因此每台机器都放了多个角色。<br>为Hive Metastore Server角色服务器添加mysql-connector-java.jar</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /opt/cm-5.11.2/share/cmf/lib/mysql-connector-java.jar /opt/cloudera/parcels/CDH-5.11.2-1.cdh5.11.2.p0.4/lib/hive/lib/</span><br></pre></td></tr></table></figure>
+<center><img src="https://i.loli.net/2018/11/19/5bf254a20c149.png" alt="11.png" title="11.png"> </center>
+
+<h4 id="4-4-4-12-配置hive连接的mysql源"><a href="#4-4-4-12-配置hive连接的mysql源" class="headerlink" title="4.4.4.12 配置hive连接的mysql源"></a>4.4.4.12 配置hive连接的mysql源</h4><blockquote>
+<p>cp /opt/cm-5.11.2/share/cmf/lib/mysql-connector-java.jar /opt/cloudera/parcels/CDH-5.11.2-1.cdh5.11.2.p0.4/lib/hive/lib/</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/19/5bf254a4398f8.png" alt="12.png" title="12.png"> </center>
+
+<h4 id="4-4-4-13-弹出下图-根据实际需求更改相应目录，点击继续，安装完成后集群配置完毕"><a href="#4-4-4-13-弹出下图-根据实际需求更改相应目录，点击继续，安装完成后集群配置完毕" class="headerlink" title="4.4.4.13 弹出下图,根据实际需求更改相应目录，点击继续，安装完成后集群配置完毕"></a>4.4.4.13 弹出下图,根据实际需求更改相应目录，点击继续，安装完成后集群配置完毕</h4><center><img src="https://i.loli.net/2018/11/19/5bf254ad52bc3.png" alt="13.png" title="13.png"> </center>
+
+<h4 id="4-4-4-14-配置yarn-ha"><a href="#4-4-4-14-配置yarn-ha" class="headerlink" title="4.4.4.14 配置yarn ha"></a>4.4.4.14 配置yarn ha</h4><blockquote>
+<p>启用高可用，选择备用主机</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/19/5bf254ad522e4.png" alt="1401.png" title="1401.png"> </center><br><center><img src="https://i.loli.net/2018/11/19/5bf254a5bcbaf.png" alt="14.png" title="14.png"> </center>
+
+<h4 id="4-4-4-15-启用hdfs-ha"><a href="#4-4-4-15-启用hdfs-ha" class="headerlink" title="4.4.4.15 启用hdfs ha"></a>4.4.4.15 启用hdfs ha</h4><center><img src="https://i.loli.net/2018/11/19/5bf254c9b8126.png" alt="15.png" title="15.png"> </center>
+
+<h4 id="4-4-4-16-配置namenode-server名称"><a href="#4-4-4-16-配置namenode-server名称" class="headerlink" title="4.4.4.16 配置namenode server名称"></a>4.4.4.16 配置namenode server名称</h4><center><img src="https://i.loli.net/2018/11/19/5bf254c74d512.png" alt="16.png" title="16.png"> </center>
+
+<h4 id="4-4-4-17-选择备用hdfs主机"><a href="#4-4-4-17-选择备用hdfs主机" class="headerlink" title="4.4.4.17 选择备用hdfs主机"></a>4.4.4.17 选择备用hdfs主机</h4><center><img src="https://i.loli.net/2018/11/19/5bf254c9b74c7.png" alt="17.png" title="17.png"> </center>
+
+<h4 id="4-4-4-18-设置目录"><a href="#4-4-4-18-设置目录" class="headerlink" title="4.4.4.18 设置目录"></a>4.4.4.18 设置目录</h4><center><img src="https://i.loli.net/2018/11/19/5bf254cb93962.png" alt="18.png" title="18.png"> </center>
+
+<h4 id="4-4-4-19-点击继续"><a href="#4-4-4-19-点击继续" class="headerlink" title="4.4.4.19 点击继续"></a>4.4.4.19 点击继续</h4><center><img src="https://i.loli.net/2018/11/19/5bf254cc5cfc7.png" alt="19.png" title="19.png"> </center>
+
+<h4 id="4-4-4-20-至此，hdfs高可用完毕"><a href="#4-4-4-20-至此，hdfs高可用完毕" class="headerlink" title="4.4.4.20 至此，hdfs高可用完毕"></a>4.4.4.20 至此，hdfs高可用完毕</h4><center><img src="https://i.loli.net/2018/11/19/5bf254a2c3510.png" alt="20.png" title="20.png"> </center>
+
+<h3 id="4-4-5-配置nginx负载均衡impalad"><a href="#4-4-5-配置nginx负载均衡impalad" class="headerlink" title="4.4.5 配置nginx负载均衡impalad"></a>4.4.5 配置nginx负载均衡impalad</h3><h4 id="4-4-5-1-安装"><a href="#4-4-5-1-安装" class="headerlink" title="4.4.5.1 安装"></a>4.4.5.1 安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">#安装依赖</span><br><span class="line">yum install pcre-devel zlib-devel openssl-devel -y</span><br><span class="line">#编译</span><br><span class="line">./configure --prefix=/home/data/nginx --with-http_ssl_module --with-http_flv_module --with-http_stub_status_module --with-http_gzip_static_module  --with-stream</span><br><span class="line">#安装</span><br><span class="line">make &amp;&amp; make install</span><br><span class="line">#编辑配置文件 cat /home/data/nginx/conf/nginx.conf</span><br><span class="line">worker_processes  8;</span><br><span class="line">worker_rlimit_nofile 65535;</span><br><span class="line"></span><br><span class="line">error_log  logs/error.log;</span><br><span class="line">pid        logs/nginx.pid;</span><br><span class="line"></span><br><span class="line">events &#123;</span><br><span class="line">    use  epoll;</span><br><span class="line">    worker_connections  65535;</span><br><span class="line">&#125;</span><br><span class="line">stream &#123;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen 31050;</span><br><span class="line">        proxy_pass impala;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    upstream impala &#123;</span><br><span class="line">	server 168.1.2.180:21050;</span><br><span class="line">	server 168.1.2.181:21050;</span><br><span class="line">	server 168.1.2.182:21050;</span><br><span class="line">	server 168.1.2.183:21050;   </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="4-4-5-2-启动-amp-amp-停止"><a href="#4-4-5-2-启动-amp-amp-停止" class="headerlink" title="4.4.5.2 启动&amp;&amp;停止"></a>4.4.5.2 启动&amp;&amp;停止</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">启动：/home/data/nginx/sbin/nginx</span><br><span class="line">停止：pkill -9 nginx</span><br></pre></td></tr></table></figure>
+<h4 id="4-4-5-3-连接地址"><a href="#4-4-5-3-连接地址" class="headerlink" title="4.4.5.3 连接地址"></a>4.4.5.3 连接地址</h4><blockquote>
+<p>168.1.2.180:31050</p>
+</blockquote>
+<h3 id="4-4-6-java程序连接集群的配置文件"><a href="#4-4-6-java程序连接集群的配置文件" class="headerlink" title="4.4.6 java程序连接集群的配置文件"></a>4.4.6 java程序连接集群的配置文件</h3><blockquote>
+<p>配置文件包含两个:hdfs-site.xml 和core-site.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/etc/hadoop/conf.cloudera.hdfs/core-site.xml</span><br><span class="line">/etc/hadoop/conf.cloudera.hdfs/hdfs-site.xml</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h2 id="4-5-集群维护"><a href="#4-5-集群维护" class="headerlink" title="4.5 集群维护"></a>4.5 集群维护</h2><blockquote>
+<p>本章用来介绍如何操作cdh集群的启停</p>
+</blockquote>
+<h3 id="4-5-1-启动"><a href="#4-5-1-启动" class="headerlink" title="4.5.1 启动"></a>4.5.1 启动</h3><h4 id="4-5-1-1-启动mysql"><a href="#4-5-1-1-启动mysql" class="headerlink" title="4.5.1.1 启动mysql"></a>4.5.1.1 启动mysql</h4><blockquote>
+<p>mysql安装地址为gxjh01上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start mysql</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="4-5-1-2-启动cm-server"><a href="#4-5-1-2-启动cm-server" class="headerlink" title="4.5.1.2 启动cm-server"></a>4.5.1.2 启动cm-server</h4><blockquote>
+<p>cm-server部署在gxjh01上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">opt/cm-5.11.2/etc/init.d/cloudera-scm-server start</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="4-5-1-3-启动cm-agent"><a href="#4-5-1-3-启动cm-agent" class="headerlink" title="4.5.1.3 启动cm-agent"></a>4.5.1.3 启动cm-agent</h4><blockquote>
+<p>cm-agent部署在gxjh[01:04]上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">opt/cm-5.11.2/etc/init.d/cloudera-scm-agent start</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="4-5-1-4-启动nginx"><a href="#4-5-1-4-启动nginx" class="headerlink" title="4.5.1.4 启动nginx"></a>4.5.1.4 启动nginx</h4><blockquote>
+<p>nginx安装地址为gxjh01上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/data/nginx/sbin/nginx</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="4-5-1-5-登陆cm-server-web界面管理集群"><a href="#4-5-1-5-登陆cm-server-web界面管理集群" class="headerlink" title="4.5.1.5 登陆cm-server web界面管理集群"></a>4.5.1.5 登陆cm-server web界面管理集群</h4><blockquote>
+<p>通过界面启动集群</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/19/5bf261d74f247.png" alt="21.png" title="21.png"></center>
+
+<h3 id="4-5-2-关闭"><a href="#4-5-2-关闭" class="headerlink" title="4.5.2 关闭"></a>4.5.2 关闭</h3><h4 id="4-5-2-1-登陆cm-server-web界面管理集群"><a href="#4-5-2-1-登陆cm-server-web界面管理集群" class="headerlink" title="4.5.2.1 登陆cm-server web界面管理集群"></a>4.5.2.1 登陆cm-server web界面管理集群</h4><blockquote>
+<p>通过界面关闭集群</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/19/5bf261d74f247.png" alt="21.png" title="21.png"></center>
+
+<h4 id="4-5-2-2-关闭nginx"><a href="#4-5-2-2-关闭nginx" class="headerlink" title="4.5.2.2 关闭nginx"></a>4.5.2.2 关闭nginx</h4><blockquote>
+<p>nginx安装地址为gxjh01上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pkill -9 nginx</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="4-5-2-3-关闭cm-agent"><a href="#4-5-2-3-关闭cm-agent" class="headerlink" title="4.5.2.3 关闭cm-agent"></a>4.5.2.3 关闭cm-agent</h4><blockquote>
+<p>cm-agent部署在gxjh[01:04]上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">opt/cm-5.11.2/etc/init.d/cloudera-scm-agent stop</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="4-5-2-4关闭cm-server"><a href="#4-5-2-4关闭cm-server" class="headerlink" title="4.5.2.4关闭cm-server"></a>4.5.2.4关闭cm-server</h4><blockquote>
+<p>cm-server部署在gxjh01上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">opt/cm-5.11.2/etc/init.d/cloudera-scm-server stop</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="4-5-2-5-关闭mysql"><a href="#4-5-2-5-关闭mysql" class="headerlink" title="4.5.2.5 关闭mysql"></a>4.5.2.5 关闭mysql</h4><blockquote>
+<p>mysql安装地址为gxjh01上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop mysql</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+       
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/大数据/" rel="tag"># 大数据</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/01/mysql版本升级/" rel="next" title="mysql的版本升级">
+                <i class="fa fa-chevron-left"></i> mysql的版本升级
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/02/mysql常用统计sql/" rel="prev" title="mysql常用统计sql">
+                mysql常用统计sql <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">杨航</p>
+              <p class="site-description motion-element" itemprop="description">所有的伟大，都源于一个勇敢的开始。</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-概述"><span class="nav-number">1.</span> <span class="nav-text">1 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-服务器规划配置"><span class="nav-number">2.</span> <span class="nav-text">2 服务器规划配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-部署软件版本和下载地址"><span class="nav-number">3.</span> <span class="nav-text">3 部署软件版本和下载地址</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-配置"><span class="nav-number">4.</span> <span class="nav-text">4 配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-安装配置管理工具ansible"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 安装配置管理工具ansible</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-1-安装"><span class="nav-number">4.1.1.</span> <span class="nav-text">4.1.1 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-2-修改配置文件"><span class="nav-number">4.1.2.</span> <span class="nav-text">4.1.2 修改配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-3-配置ansible组"><span class="nav-number">4.1.3.</span> <span class="nav-text">4.1.3 配置ansible组</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-初始化服务器环境"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 初始化服务器环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-1-执行脚本"><span class="nav-number">4.2.1.</span> <span class="nav-text">4.2.1 执行脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-2-配置主机互信"><span class="nav-number">4.2.2.</span> <span class="nav-text">4.2.2 配置主机互信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-3-配置jdk"><span class="nav-number">4.2.3.</span> <span class="nav-text">4.2.3 配置jdk</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-配置mysql"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 配置mysql</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-1-配置mysql5-7-repo"><span class="nav-number">4.3.1.</span> <span class="nav-text">4.3.1 配置mysql5.7.repo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-2-安装"><span class="nav-number">4.3.2.</span> <span class="nav-text">4.3.2 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-3-mysql配置文件"><span class="nav-number">4.3.3.</span> <span class="nav-text">4.3.3 mysql配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-4-初始化mysql库"><span class="nav-number">4.3.4.</span> <span class="nav-text">4.3.4 初始化mysql库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-5-启动mysql"><span class="nav-number">4.3.5.</span> <span class="nav-text">4.3.5 启动mysql</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-6-执行mysql-secure-installation"><span class="nav-number">4.3.6.</span> <span class="nav-text">4.3.6 执行mysql_secure_installation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-7-创建hive库"><span class="nav-number">4.3.7.</span> <span class="nav-text">4.3.7 创建hive库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-配置CDH"><span class="nav-number">4.4.</span> <span class="nav-text">4.4 配置CDH</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-1-配置cm-server"><span class="nav-number">4.4.1.</span> <span class="nav-text">4.4.1 配置cm-server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-2-配置cm-agent配置"><span class="nav-number">4.4.2.</span> <span class="nav-text">4.4.2 配置cm-agent配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-3-启动agent和开机自启动"><span class="nav-number">4.4.3.</span> <span class="nav-text">4.4.3 启动agent和开机自启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-4-登陆cm-server控制台，配置集群"><span class="nav-number">4.4.4.</span> <span class="nav-text">4.4.4 登陆cm-server控制台，配置集群</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-1-登陆控制台"><span class="nav-number">4.4.4.1.</span> <span class="nav-text">4.4.4.1 登陆控制台</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-2-登陆控制台"><span class="nav-number">4.4.4.2.</span> <span class="nav-text">4.4.4.2 登陆控制台</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-3-选择所要安装的版本"><span class="nav-number">4.4.4.3.</span> <span class="nav-text">4.4.4.3 选择所要安装的版本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-4-弹出下图"><span class="nav-number">4.4.4.4.</span> <span class="nav-text">4.4.4.4 弹出下图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-5-选择待安装的主机"><span class="nav-number">4.4.4.5.</span> <span class="nav-text">4.4.4.5 选择待安装的主机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-6-弹出下图点击继续"><span class="nav-number">4.4.4.6.</span> <span class="nav-text">4.4.4.6 弹出下图点击继续</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-7-弹出下图点击继续"><span class="nav-number">4.4.4.7.</span> <span class="nav-text">4.4.4.7 弹出下图点击继续</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-8-弹出下图点击继续"><span class="nav-number">4.4.4.8.</span> <span class="nav-text">4.4.4.8 弹出下图点击继续</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-9-弹出下图点击继续"><span class="nav-number">4.4.4.9.</span> <span class="nav-text">4.4.4.9 弹出下图点击继续</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-10-选择自定义角色安装"><span class="nav-number">4.4.4.10.</span> <span class="nav-text">4.4.4.10 选择自定义角色安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-11-为每个角色选择主机"><span class="nav-number">4.4.4.11.</span> <span class="nav-text">4.4.4.11 为每个角色选择主机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-12-配置hive连接的mysql源"><span class="nav-number">4.4.4.12.</span> <span class="nav-text">4.4.4.12 配置hive连接的mysql源</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-13-弹出下图-根据实际需求更改相应目录，点击继续，安装完成后集群配置完毕"><span class="nav-number">4.4.4.13.</span> <span class="nav-text">4.4.4.13 弹出下图,根据实际需求更改相应目录，点击继续，安装完成后集群配置完毕</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-14-配置yarn-ha"><span class="nav-number">4.4.4.14.</span> <span class="nav-text">4.4.4.14 配置yarn ha</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-15-启用hdfs-ha"><span class="nav-number">4.4.4.15.</span> <span class="nav-text">4.4.4.15 启用hdfs ha</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-16-配置namenode-server名称"><span class="nav-number">4.4.4.16.</span> <span class="nav-text">4.4.4.16 配置namenode server名称</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-17-选择备用hdfs主机"><span class="nav-number">4.4.4.17.</span> <span class="nav-text">4.4.4.17 选择备用hdfs主机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-18-设置目录"><span class="nav-number">4.4.4.18.</span> <span class="nav-text">4.4.4.18 设置目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-19-点击继续"><span class="nav-number">4.4.4.19.</span> <span class="nav-text">4.4.4.19 点击继续</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-4-20-至此，hdfs高可用完毕"><span class="nav-number">4.4.4.20.</span> <span class="nav-text">4.4.4.20 至此，hdfs高可用完毕</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-5-配置nginx负载均衡impalad"><span class="nav-number">4.4.5.</span> <span class="nav-text">4.4.5 配置nginx负载均衡impalad</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-5-1-安装"><span class="nav-number">4.4.5.1.</span> <span class="nav-text">4.4.5.1 安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-5-2-启动-amp-amp-停止"><span class="nav-number">4.4.5.2.</span> <span class="nav-text">4.4.5.2 启动&amp;&amp;停止</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-5-3-连接地址"><span class="nav-number">4.4.5.3.</span> <span class="nav-text">4.4.5.3 连接地址</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-6-java程序连接集群的配置文件"><span class="nav-number">4.4.6.</span> <span class="nav-text">4.4.6 java程序连接集群的配置文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-集群维护"><span class="nav-number">4.5.</span> <span class="nav-text">4.5 集群维护</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-1-启动"><span class="nav-number">4.5.1.</span> <span class="nav-text">4.5.1 启动</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-1-1-启动mysql"><span class="nav-number">4.5.1.1.</span> <span class="nav-text">4.5.1.1 启动mysql</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-1-2-启动cm-server"><span class="nav-number">4.5.1.2.</span> <span class="nav-text">4.5.1.2 启动cm-server</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-1-3-启动cm-agent"><span class="nav-number">4.5.1.3.</span> <span class="nav-text">4.5.1.3 启动cm-agent</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-1-4-启动nginx"><span class="nav-number">4.5.1.4.</span> <span class="nav-text">4.5.1.4 启动nginx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-1-5-登陆cm-server-web界面管理集群"><span class="nav-number">4.5.1.5.</span> <span class="nav-text">4.5.1.5 登陆cm-server web界面管理集群</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-2-关闭"><span class="nav-number">4.5.2.</span> <span class="nav-text">4.5.2 关闭</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-2-1-登陆cm-server-web界面管理集群"><span class="nav-number">4.5.2.1.</span> <span class="nav-text">4.5.2.1 登陆cm-server web界面管理集群</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-2-2-关闭nginx"><span class="nav-number">4.5.2.2.</span> <span class="nav-text">4.5.2.2 关闭nginx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-2-3-关闭cm-agent"><span class="nav-number">4.5.2.3.</span> <span class="nav-text">4.5.2.3 关闭cm-agent</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-2-4关闭cm-server"><span class="nav-number">4.5.2.4.</span> <span class="nav-text">4.5.2.4关闭cm-server</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-2-5-关闭mysql"><span class="nav-number">4.5.2.5.</span> <span class="nav-text">4.5.2.5 关闭mysql</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">杨航</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v6.6.0</div>
+
+
+<div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<span id="busuanzi_container_site_pv" style="display:none">
+    本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+    <span class="post-meta-divider">|</span>
+</span>
+<span id="busuanzi_container_site_uv" style="display:none">
+    有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+      
+  
+  <script type="text/javascript" color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.6.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.6.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.6.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.6.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.6.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.6.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.6.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

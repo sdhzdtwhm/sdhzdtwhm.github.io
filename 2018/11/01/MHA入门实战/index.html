@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN,default">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.6.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.6.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.6.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.6.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="介绍原理介绍 MHA（Master High Availability）目前在MySQL高可用方面是一个相对成熟的解决方案，它由日本DeNA公司youshimaton（现就职于Facebook公司）开发，是一套优秀的作为MySQL高可用性环境下故障切换和主从提升的高可用软件。在MySQL故障切换过程中，MHA能做到在0~30秒之内自动完成数据库的故障切换操作，并且在进行故障切换的过程中，MHA能在">
+<meta name="keywords" content="mysql,高可用架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mha入门实战">
+<meta property="og:url" content="https://sdhzdtwhm.github.io/2018/11/01/MHA入门实战/index.html">
+<meta property="og:site_name" content="杨航的博客">
+<meta property="og:description" content="介绍原理介绍 MHA（Master High Availability）目前在MySQL高可用方面是一个相对成熟的解决方案，它由日本DeNA公司youshimaton（现就职于Facebook公司）开发，是一套优秀的作为MySQL高可用性环境下故障切换和主从提升的高可用软件。在MySQL故障切换过程中，MHA能做到在0~30秒之内自动完成数据库的故障切换操作，并且在进行故障切换的过程中，MHA能在">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://i.loli.net/2018/11/23/5bf797dc1ecf6.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/23/5bf791b401f91.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/23/5bf791b41b9dd.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/23/5bf791b3727dd.png">
+<meta property="og:image" content="https://i.loli.net/2018/11/23/5bf791b40135f.png">
+<meta property="og:updated_time" content="2018-12-19T01:55:03.795Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mha入门实战">
+<meta name="twitter:description" content="介绍原理介绍 MHA（Master High Availability）目前在MySQL高可用方面是一个相对成熟的解决方案，它由日本DeNA公司youshimaton（现就职于Facebook公司）开发，是一套优秀的作为MySQL高可用性环境下故障切换和主从提升的高可用软件。在MySQL故障切换过程中，MHA能做到在0~30秒之内自动完成数据库的故障切换操作，并且在进行故障切换的过程中，MHA能在">
+<meta name="twitter:image" content="https://i.loli.net/2018/11/23/5bf797dc1ecf6.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="杨航的博客" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="https://sdhzdtwhm.github.io/2018/11/01/MHA入门实战/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>mha入门实战 | 杨航的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">杨航的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://sdhzdtwhm.github.io/2018/11/01/MHA入门实战/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="杨航">
+      <meta itemprop="description" content="所有的伟大，都源于一个勇敢的开始。">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杨航的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">mha入门实战
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-01 09:39:06" itemprop="dateCreated datePublished" datetime="2018-11-01T09:39:06+08:00">2018-11-01</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-12-19 09:55:03" itemprop="dateModified" datetime="2018-12-19T09:55:03+08:00">2018-12-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+          
+            <span class="post-meta-divider">|</span>
+            <span id="busuanzi_value_page_pv"></span>次阅读
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><h2 id="原理介绍"><a href="#原理介绍" class="headerlink" title="原理介绍"></a>原理介绍</h2><blockquote>
+<p>MHA（Master High Availability）目前在MySQL高可用方面是一个相对成熟的解决方案，它由日本DeNA公司youshimaton（现就职于Facebook公司）开发，是一套优秀的作为MySQL高可用性环境下故障切换和主从提升的高可用软件。在MySQL故障切换过程中，MHA能做到在0~30秒之内自动完成数据库的故障切换操作，并且在进行故障切换的过程中，MHA能在最大程度上保证数据的一致性，以达到真正意义上的高可用。</p>
+</blockquote>
+<h3 id="mha集群架构图"><a href="#mha集群架构图" class="headerlink" title="mha集群架构图"></a>mha集群架构图</h3><center> <img src="https://i.loli.net/2018/11/23/5bf797dc1ecf6.png" alt="mha.png" title="mha.png"></center>
+
+<a id="more"></a>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1.从宕机崩溃的master保存二进制日志事件（binlog events）;</span><br><span class="line">2.识别含有最新更新的slave；</span><br><span class="line">3.应用差异的中继日志（relay log）到其他的slave；</span><br><span class="line">4.应用从master保存的二进制日志事件（binlog events）；</span><br><span class="line">5.提升一个slave为新的master；</span><br><span class="line">6.使其他的slave连接新的master进行复制；</span><br></pre></td></tr></table></figure>
+<h2 id="软件构成"><a href="#软件构成" class="headerlink" title="软件构成"></a>软件构成</h2><blockquote>
+<p>MHA软件由两部分组成，Manager工具包和Node工具包，具体的说明如下。</p>
+</blockquote>
+<h3 id="Manager工具包"><a href="#Manager工具包" class="headerlink" title="Manager工具包"></a>Manager工具包</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">masterha_check_ssh              检查MHA的SSH配置状况</span><br><span class="line">masterha_check_repl             检查MySQL复制状况</span><br><span class="line">masterha_manger                 启动MHA</span><br><span class="line">masterha_check_status           检测当前MHA运行状态</span><br><span class="line">masterha_master_monitor         检测master是否宕机</span><br><span class="line">masterha_master_switch          控制故障转移（自动或者手动）</span><br><span class="line">masterha_conf_host              添加或删除配置的server信息</span><br></pre></td></tr></table></figure>
+<h3 id="Node工具包"><a href="#Node工具包" class="headerlink" title="Node工具包"></a>Node工具包</h3><blockquote>
+<p>这些工具通常由MHA Manager的脚本触发，无需人为操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">save_binary_logs                保存和复制master的二进制日志</span><br><span class="line">apply_diff_relay_logs           识别差异的中继日志事件并将其差异的事件应用于其他的slave</span><br><span class="line">filter_mysqlbinlog              去除不必要的ROLLBACK事件（MHA已不再使用这个工具）</span><br><span class="line">purge_relay_logs                清除中继日志（不会阻塞SQL线程）</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h2 id="参考地址"><a href="#参考地址" class="headerlink" title="参考地址"></a>参考地址</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/yoshinorim/mha4mysql-manager/wiki/Installation</span><br><span class="line">http://www.cnblogs.com/gomysql/p/3675429.html</span><br></pre></td></tr></table></figure>
+<h1 id="部署规划"><a href="#部署规划" class="headerlink" title="部署规划"></a>部署规划</h1><blockquote>
+<p>本次部署准备三台服务器，一台master，一台备用master，一台slave；vip的产生使用keepalived（之前使用过ifconfig添加vip，但有的时候能够ping通有的时候不通，因此换成keepalived）</p>
+</blockquote>
+<h2 id="部署规划-1"><a href="#部署规划-1" class="headerlink" title="部署规划"></a>部署规划</h2><table>
+<thead>
+<tr>
+<th>序号</th>
+<th>服务器主机名</th>
+<th>服务器IP</th>
+<th>mha角色</th>
+<th>用途</th>
+<th>需要安装软件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>node71</td>
+<td>192.168.2.71</td>
+<td>mha-manager+mha-node</td>
+<td>slave+mha-manager</td>
+<td>mysql+mha4mysql-node+mha4mysql-manager</td>
+</tr>
+<tr>
+<td>2</td>
+<td>node72</td>
+<td>192.168.2.72</td>
+<td>mha-node</td>
+<td>备用master节点</td>
+<td>mysql+mha4mysql-node+keepalived</td>
+</tr>
+<tr>
+<td>3</td>
+<td>node73</td>
+<td>192.168.2.73</td>
+<td>mha-node</td>
+<td>master节点</td>
+<td>mysql+mha4mysql-node +keepalived</td>
+</tr>
+</tbody>
+</table>
+<h2 id="yum源配置"><a href="#yum源配置" class="headerlink" title="yum源配置"></a>yum源配置</h2><blockquote>
+<p>若服务器能联网请添加阿里云epel.repo镜像源和mysql5.6源，若不能联网，需将需要的包下载下来自制yum源；生产环境很多不能连接互联网，可在一台可联网的测试机上配置epel源，通过yum install –downloadonly –downloaddir=/root/mha/ perl-Parallel-ForkManager perl-DBD-MySQL perl-Config-Tiny perl-Log-Dispatch mysql-community-server，下载到本地，通过createrepo创建yum源</p>
+</blockquote>
+<h2 id="安装包和相关脚本获取"><a href="#安装包和相关脚本获取" class="headerlink" title="安装包和相关脚本获取"></a>安装包和相关脚本获取</h2><blockquote>
+<p>文件存放在百度网盘中，链接：<a href="https://pan.baidu.com/s/12jqvyr_fM9qZTdP3sAbDFg" target="_blank" rel="noopener">https://pan.baidu.com/s/12jqvyr_fM9qZTdP3sAbDFg</a> 提取码：t2jv </p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>文件名称</th>
+<th>文件用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>app1.conf</td>
+<td>mha-manager配置文件</td>
+</tr>
+<tr>
+<td>2</td>
+<td>install_mysql5.6.sh</td>
+<td>脚本自动安装初始化mysql5.6</td>
+</tr>
+<tr>
+<td>3</td>
+<td>master_ip_failover</td>
+<td>故障切换masterip脚本</td>
+</tr>
+<tr>
+<td>4</td>
+<td>master_ip_online_change</td>
+<td>在线切换masterip脚本</td>
+</tr>
+<tr>
+<td>5</td>
+<td>mha4mysql-manager-0.57-0.el7.noarch.rpm</td>
+<td>mha-manager rpm安装包</td>
+</tr>
+<tr>
+<td>6</td>
+<td>mha4mysql-node-0.57-0.el7.noarch.rpm</td>
+<td>mha-node rpm安装包</td>
+</tr>
+<tr>
+<td>7</td>
+<td>send_report</td>
+<td>切换ip发送邮件脚本</td>
+</tr>
+<tr>
+<td>8</td>
+<td>keepalived.conf</td>
+<td>产生vip的配置文件</td>
+</tr>
+<tr>
+<td>9</td>
+<td>purge_relay_log.sh</td>
+<td>自动删除relay日志脚本</td>
+</tr>
+<tr>
+<td>10</td>
+<td>mha4mysql-node-0.57.tar.gz</td>
+<td>mha-node 源码安装包</td>
+</tr>
+<tr>
+<td>11</td>
+<td>mha4mysql-manager-0.57.tar.gz</td>
+<td>mha-manager 源码安装包</td>
+</tr>
+</tbody>
+</table>
+<h2 id="操作系统环境"><a href="#操作系统环境" class="headerlink" title="操作系统环境"></a>操作系统环境</h2><blockquote>
+<p>本次测试环境为centos7.4最小化安装，服务器可以访问外网</p>
+</blockquote>
+<h1 id="部署集群"><a href="#部署集群" class="headerlink" title="部署集群"></a>部署集群</h1><h2 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h2><blockquote>
+<p>使用脚本完成mysql的部署，脚本使用yum进行安装，并完成相应的初始化</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bash +x install_mysql5.6.sh</span><br><span class="line"><span class="comment"># 脚本执行完毕后mysql用户：root 密码：mvtech123</span></span><br></pre></td></tr></table></figure>
+<h2 id="配置主从复制"><a href="#配置主从复制" class="headerlink" title="配置主从复制"></a>配置主从复制</h2><blockquote>
+<p>配置成一主多从架构</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">1 添加主从复制账户</span><br><span class="line">    <span class="keyword">grant</span> <span class="keyword">replication</span> <span class="keyword">slave</span> <span class="keyword">on</span> *.* <span class="keyword">to</span> repl@<span class="string">'192.168.2.%'</span> <span class="keyword">identified</span> <span class="keyword">by</span> <span class="string">'slave'</span>;</span><br><span class="line">2 添加mha管理账号，每台都添加</span><br><span class="line">    <span class="keyword">grant</span> all <span class="keyword">privileges</span> <span class="keyword">on</span> *.* <span class="keyword">to</span> root@<span class="string">"%"</span> <span class="keyword">identified</span> <span class="keyword">by</span> <span class="string">"mvtech123"</span>;()</span><br><span class="line">    <span class="keyword">grant</span> all <span class="keyword">privileges</span> <span class="keyword">on</span> *.* <span class="keyword">to</span> masterha@<span class="string">"%"</span> <span class="keyword">identified</span> <span class="keyword">by</span> <span class="string">"masterha"</span>;(注：本次配置文件里设置的是root账号)</span><br><span class="line">3 查看主库binlog日志</span><br><span class="line">    <span class="keyword">show</span> <span class="built_in">binary</span> <span class="keyword">logs</span></span><br><span class="line"><span class="number">4</span> 从库配置主从</span><br><span class="line">    <span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> MASTER_HOST=<span class="string">'192.168.2.72'</span>,</span><br><span class="line">    MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">    MASTER_PASSWORD=<span class="string">'slave'</span>,</span><br><span class="line">    MASTER_LOG_FILE=<span class="string">'mysql-bin.000004'</span>,</span><br><span class="line">    MASTER_LOG_POS=<span class="number">533</span>;</span><br><span class="line">5 从库启动slave</span><br><span class="line">    <span class="keyword">start</span> <span class="keyword">slave</span>;</span><br><span class="line">6 查看从库主从复制状态</span><br><span class="line">    <span class="keyword">show</span> <span class="keyword">slave</span> <span class="keyword">status</span>;</span><br><span class="line">7 slave执行：</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> relay_log_purge=<span class="number">0</span>;(此处我已添加到脚本里，不用每次都执行)</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> read_only=<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="配置mha集群"><a href="#配置mha集群" class="headerlink" title="配置mha集群"></a>配置mha集群</h2><h3 id="配置各个节点之间的主机互信"><a href="#配置各个节点之间的主机互信" class="headerlink" title="配置各个节点之间的主机互信"></a>配置各个节点之间的主机互信</h3><blockquote>
+<p>本次使用ansible快速配置，具体ansible的配置在此不做赘述。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-- 各服务器执行ssh-keygen</span><br><span class="line">ansible mha -m shell -a <span class="string">"ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa"</span> -f 100</span><br><span class="line">-- 生成authorized_keys文件</span><br><span class="line">ansible mha -m shell -a <span class="string">"cat /root/.ssh/id_rsa.pub"</span> -f 100 &gt; /tmp/authorized_keys</span><br><span class="line">-- 去除多余的行</span><br><span class="line">sed -i <span class="string">'/SUCCESS/d'</span> /tmp/authorized_keys</span><br><span class="line">-- 分发authorized_keys至每台服务器</span><br><span class="line">ansible mha -m copy -a <span class="string">"src=/tmp/authorized_keys dest=/root/.ssh/ owner=root group=root mode=0644"</span> -f 100</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="配置node节点"><a href="#配置node节点" class="headerlink" title="配置node节点"></a>配置node节点</h3><blockquote>
+<p>node节点是除了manager角色以外的节点，此次试验为,node72，node73<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#安装依赖包</span><br><span class="line">yum install perl-DBD-MySQL</span><br><span class="line">#安装node rpm包</span><br><span class="line">rpm -ivh mha4mysql-node-0.57-0.el7.noarch.rpm</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>master节点和备用master节点需要配置keepalived来配置vip<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">1 安装</span><br><span class="line">yum install keepalived -y</span><br><span class="line">2 编辑配置文件/etc/keepalived/keepalived.conf(注：由于两台不同时启动，因此配置文件可以设置成一样)</span><br><span class="line">! Configuration File <span class="keyword">for</span> keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">router_id LVS_DEVEL</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">state BACKUP</span><br><span class="line">interface ens3</span><br><span class="line">virtual_router_id 30</span><br><span class="line">priority 90</span><br><span class="line">advert_int 1</span><br><span class="line">nopreempt</span><br><span class="line">authentication &#123;</span><br><span class="line">auth_type PASS</span><br><span class="line">auth_pass 11111</span><br><span class="line">&#125;</span><br><span class="line">virtual_ipaddress &#123;</span><br><span class="line">192.168.2.74</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="配置manager节点"><a href="#配置manager节点" class="headerlink" title="配置manager节点"></a>配置manager节点</h3><h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#安装依赖包</span></span><br><span class="line">yum install perl-Parallel-ForkManager perl-DBD-MySQL perl-Config-Tiny perl-Log-Dispatch</span><br><span class="line"><span class="comment">#安装manager和node rpm包</span></span><br><span class="line">rpm -ivh mha4mysql-node-0.57-0.el7.noarch.rpm</span><br><span class="line">rpm -ivh mha4mysql-manager-0.57-0.el7.noarch.rpm</span><br><span class="line"><span class="comment">#创建文件夹</span></span><br><span class="line"><span class="comment">#存放mha-manager配置文件文件夹</span></span><br><span class="line">mkdir -p /etc/masterha</span><br><span class="line"><span class="comment">#创建日志文件夹</span></span><br><span class="line">mkdir -p /var/<span class="built_in">log</span>/masterha/app1</span><br></pre></td></tr></table></figure>
+<h4 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[server default]</span><br><span class="line">manager_log=/var/<span class="built_in">log</span>/masterha/app1/manager.log</span><br><span class="line">manager_workdir=/var/<span class="built_in">log</span>/masterha/app1</span><br><span class="line">master_binlog_dir=/mvtech/mysql/logs</span><br><span class="line">master_ip_failover_script=/usr/<span class="built_in">local</span>/bin/master_ip_failover</span><br><span class="line">master_ip_online_change_script=/usr/<span class="built_in">local</span>/bin/master_ip_online_change</span><br><span class="line">user=root</span><br><span class="line">password=mvtech123</span><br><span class="line">ping_interval=1</span><br><span class="line">remote_workdir=/tmp</span><br><span class="line">repl_password=slave</span><br><span class="line">repl_user=repl</span><br><span class="line">report_script=/usr/<span class="built_in">local</span>/bin/send_report</span><br><span class="line">secondary_check_script=/usr/bin/masterha_secondary_check -s node72 -s node71</span><br><span class="line">ssh_user=root</span><br><span class="line"></span><br><span class="line">[server1]</span><br><span class="line">hostname=node73</span><br><span class="line"></span><br><span class="line">[server2]</span><br><span class="line">candidate_master=1</span><br><span class="line">hostname=node72</span><br><span class="line">port=3306</span><br><span class="line"></span><br><span class="line">[server3]</span><br><span class="line">hostname=node71</span><br><span class="line">port=3306</span><br></pre></td></tr></table></figure>
+<h4 id="创建相应脚本-脚本需要有可执行权限"><a href="#创建相应脚本-脚本需要有可执行权限" class="headerlink" title="创建相应脚本,脚本需要有可执行权限"></a>创建相应脚本,脚本需要有可执行权限</h4><blockquote>
+<p>/usr/local/bin/master_ip_failover<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env perl</span></span><br><span class="line"></span><br><span class="line">use strict;</span><br><span class="line">use warnings FATAL =&gt; <span class="string">'all'</span>;</span><br><span class="line"></span><br><span class="line">use Getopt::Long;</span><br><span class="line"></span><br><span class="line">my (</span><br><span class="line">    <span class="variable">$command</span>,          <span class="variable">$ssh_user</span>,        <span class="variable">$orig_master_host</span>, <span class="variable">$orig_master_ip</span>,</span><br><span class="line">    <span class="variable">$orig_master_port</span>, <span class="variable">$new_master_host</span>, <span class="variable">$new_master_ip</span>,    <span class="variable">$new_master_port</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">my <span class="variable">$vip</span> = <span class="string">'192.168.2.74/24'</span>;</span><br><span class="line">my <span class="variable">$key</span> = <span class="string">'1'</span>;</span><br><span class="line">my <span class="variable">$ssh_start_vip</span> = <span class="string">"/bin/systemctl start keepalived"</span>;</span><br><span class="line">my <span class="variable">$ssh_stop_vip</span> = <span class="string">"/bin/systemctl stop keepalived"</span>;</span><br><span class="line"></span><br><span class="line">GetOptions(</span><br><span class="line">    <span class="string">'command=s'</span>          =&gt; \<span class="variable">$command</span>,</span><br><span class="line">    <span class="string">'ssh_user=s'</span>         =&gt; \<span class="variable">$ssh_user</span>,</span><br><span class="line">    <span class="string">'orig_master_host=s'</span> =&gt; \<span class="variable">$orig_master_host</span>,</span><br><span class="line">    <span class="string">'orig_master_ip=s'</span>   =&gt; \<span class="variable">$orig_master_ip</span>,</span><br><span class="line">    <span class="string">'orig_master_port=i'</span> =&gt; \<span class="variable">$orig_master_port</span>,</span><br><span class="line">    <span class="string">'new_master_host=s'</span>  =&gt; \<span class="variable">$new_master_host</span>,</span><br><span class="line">    <span class="string">'new_master_ip=s'</span>    =&gt; \<span class="variable">$new_master_ip</span>,</span><br><span class="line">    <span class="string">'new_master_port=i'</span>  =&gt; \<span class="variable">$new_master_port</span>,</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="built_in">exit</span> &amp;main();</span><br><span class="line"></span><br><span class="line">sub main &#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span> <span class="string">"\n\nIN SCRIPT TEST====<span class="variable">$ssh_stop_vip</span>==<span class="variable">$ssh_start_vip</span>===\n\n"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ( <span class="variable">$command</span> eq <span class="string">"stop"</span> || <span class="variable">$command</span> eq <span class="string">"stopssh"</span> ) &#123;</span><br><span class="line"></span><br><span class="line">        my <span class="variable">$exit_code</span> = 1;</span><br><span class="line">        <span class="built_in">eval</span> &#123;</span><br><span class="line">            <span class="built_in">print</span> <span class="string">"Disabling the VIP on old master: <span class="variable">$orig_master_host</span> \n"</span>;</span><br><span class="line">            &amp;stop_vip();</span><br><span class="line">            <span class="variable">$exit_code</span> = 0;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$@</span>) &#123;</span><br><span class="line">            warn <span class="string">"Got Error: <span class="variable">$@</span>\n"</span>;</span><br><span class="line">            <span class="built_in">exit</span> <span class="variable">$exit_code</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">exit</span> <span class="variable">$exit_code</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    elsif ( <span class="variable">$command</span> eq <span class="string">"start"</span> ) &#123;</span><br><span class="line"></span><br><span class="line">        my <span class="variable">$exit_code</span> = 10;</span><br><span class="line">        <span class="built_in">eval</span> &#123;</span><br><span class="line">            <span class="built_in">print</span> <span class="string">"Enabling the VIP - <span class="variable">$vip</span> on the new master - <span class="variable">$new_master_host</span> \n"</span>;</span><br><span class="line">            &amp;start_vip();</span><br><span class="line">            <span class="variable">$exit_code</span> = 0;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$@</span>) &#123;</span><br><span class="line">            warn <span class="variable">$@</span>;</span><br><span class="line">            <span class="built_in">exit</span> <span class="variable">$exit_code</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">exit</span> <span class="variable">$exit_code</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    elsif ( <span class="variable">$command</span> eq <span class="string">"status"</span> ) &#123;</span><br><span class="line">        <span class="built_in">print</span> <span class="string">"Checking the Status of the script.. OK \n"</span>;</span><br><span class="line">        <span class="built_in">exit</span> 0;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        &amp;usage();</span><br><span class="line">        <span class="built_in">exit</span> 1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sub <span class="function"><span class="title">start_vip</span></span>() &#123;</span><br><span class="line">    `ssh <span class="variable">$ssh_user</span>\@<span class="variable">$new_master_host</span> \<span class="string">" <span class="variable">$ssh_start_vip</span> \"`;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">sub stop_vip() &#123;</span></span><br><span class="line"><span class="string">     return 0  unless  (<span class="variable">$ssh_user</span>);</span></span><br><span class="line"><span class="string">    `ssh <span class="variable">$ssh_user</span>\@<span class="variable">$orig_master_host</span> \" <span class="variable">$ssh_stop_vip</span> \"`;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">sub usage &#123;</span></span><br><span class="line"><span class="string">    print</span></span><br><span class="line"><span class="string">    "</span>Usage: master_ip_failover --<span class="built_in">command</span>=start|stop|stopssh|status --orig_master_host=host --orig_master_ip=ip --orig_master_port=port --new_master_host=host --new_master_ip=ip --new_master_port=port\n<span class="string">";</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>/usr/local/bin/master_ip_online_change 在线切换master的ip<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env perl</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#  Copyright (C) 2011 DeNA Co.,Ltd.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#  This program is free software; you can redistribute it and/or modify</span></span><br><span class="line"><span class="comment">#  it under the terms of the GNU General Public License as published by</span></span><br><span class="line"><span class="comment">#  the Free Software Foundation; either version 2 of the License, or</span></span><br><span class="line"><span class="comment">#  (at your option) any later version.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#  This program is distributed in the hope that it will be useful,</span></span><br><span class="line"><span class="comment">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span></span><br><span class="line"><span class="comment">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></span><br><span class="line"><span class="comment">#  GNU General Public License for more details.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#  You should have received a copy of the GNU General Public License</span></span><br><span class="line"><span class="comment">#   along with this program; if not, write to the Free Software</span></span><br><span class="line"><span class="comment">#  Foundation, Inc.,</span></span><br><span class="line"><span class="comment">#  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## <span class="doctag">Note:</span> This is a sample script and is not complete. Modify the script based on your environment.</span></span><br><span class="line"></span><br><span class="line">use strict;</span><br><span class="line">use warnings FATAL =&gt; <span class="string">'all'</span>;</span><br><span class="line"></span><br><span class="line">use Getopt::Long;</span><br><span class="line">use MHA::DBHelper;</span><br><span class="line">use MHA::NodeUtil;</span><br><span class="line">use Time::HiRes qw( sleep gettimeofday tv_interval );</span><br><span class="line">use Data::Dumper;</span><br><span class="line"></span><br><span class="line">my <span class="variable">$_tstart</span>;</span><br><span class="line">my <span class="variable">$_running_interval</span> = 0.1;</span><br><span class="line">my (</span><br><span class="line">  <span class="variable">$command</span>,          <span class="variable">$orig_master_host</span>, <span class="variable">$orig_master_ip</span>,</span><br><span class="line">  <span class="variable">$orig_master_port</span>, <span class="variable">$orig_master_user</span>, </span><br><span class="line">  <span class="variable">$new_master_host</span>,  <span class="variable">$new_master_ip</span>,    <span class="variable">$new_master_port</span>,</span><br><span class="line">  <span class="variable">$new_master_user</span>,  </span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">my <span class="variable">$vip</span> = <span class="string">'192.168.2.74/24'</span>;  <span class="comment"># Virtual IP </span></span><br><span class="line">my <span class="variable">$key</span> = <span class="string">"1"</span>; </span><br><span class="line">my <span class="variable">$ssh_start_vip</span> = <span class="string">"/bin/systemctl start keepalived"</span>;</span><br><span class="line">my <span class="variable">$ssh_stop_vip</span> = <span class="string">"/bin/systemctl stop keepalived"</span>;</span><br><span class="line">my <span class="variable">$ssh_user</span> = <span class="string">"root"</span>;</span><br><span class="line">my <span class="variable">$new_master_password</span>=<span class="string">'mvtech123'</span>;</span><br><span class="line">my <span class="variable">$orig_master_password</span>=<span class="string">'mvtech123'</span>;</span><br><span class="line">GetOptions(</span><br><span class="line">  <span class="string">'command=s'</span>              =&gt; \<span class="variable">$command</span>,</span><br><span class="line">  <span class="comment">#'ssh_user=s'             =&gt; \$ssh_user,  </span></span><br><span class="line">  <span class="string">'orig_master_host=s'</span>     =&gt; \<span class="variable">$orig_master_host</span>,</span><br><span class="line">  <span class="string">'orig_master_ip=s'</span>       =&gt; \<span class="variable">$orig_master_ip</span>,</span><br><span class="line">  <span class="string">'orig_master_port=i'</span>     =&gt; \<span class="variable">$orig_master_port</span>,</span><br><span class="line">  <span class="string">'orig_master_user=s'</span>     =&gt; \<span class="variable">$orig_master_user</span>,</span><br><span class="line">  <span class="comment">#'orig_master_password=s' =&gt; \$orig_master_password,</span></span><br><span class="line">  <span class="string">'new_master_host=s'</span>      =&gt; \<span class="variable">$new_master_host</span>,</span><br><span class="line">  <span class="string">'new_master_ip=s'</span>        =&gt; \<span class="variable">$new_master_ip</span>,</span><br><span class="line">  <span class="string">'new_master_port=i'</span>      =&gt; \<span class="variable">$new_master_port</span>,</span><br><span class="line">  <span class="string">'new_master_user=s'</span>      =&gt; \<span class="variable">$new_master_user</span>,</span><br><span class="line">  <span class="comment">#'new_master_password=s'  =&gt; \$new_master_password,</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="built_in">exit</span> &amp;main();</span><br><span class="line"></span><br><span class="line">sub current_time_us &#123;</span><br><span class="line">  my ( <span class="variable">$sec</span>, <span class="variable">$microsec</span> ) = gettimeofday();</span><br><span class="line">  my <span class="variable">$curdate</span> = localtime(<span class="variable">$sec</span>);</span><br><span class="line">  <span class="built_in">return</span> <span class="variable">$curdate</span> . <span class="string">" "</span> . sprintf( <span class="string">"%06d"</span>, <span class="variable">$microsec</span> );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sub sleep_until &#123;</span><br><span class="line">  my <span class="variable">$elapsed</span> = tv_interval(<span class="variable">$_tstart</span>);</span><br><span class="line">  <span class="keyword">if</span> ( <span class="variable">$_running_interval</span> &gt; <span class="variable">$elapsed</span> ) &#123;</span><br><span class="line">    sleep( <span class="variable">$_running_interval</span> - <span class="variable">$elapsed</span> );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sub get_threads_util &#123;</span><br><span class="line">  my <span class="variable">$dbh</span>                    = <span class="built_in">shift</span>;</span><br><span class="line">  my <span class="variable">$my_connection_id</span>       = <span class="built_in">shift</span>;</span><br><span class="line">  my <span class="variable">$running_time_threshold</span> = <span class="built_in">shift</span>;</span><br><span class="line">  my <span class="variable">$type</span>                   = <span class="built_in">shift</span>;</span><br><span class="line">  <span class="variable">$running_time_threshold</span> = 0 unless (<span class="variable">$running_time_threshold</span>);</span><br><span class="line">  <span class="variable">$type</span>                   = 0 unless (<span class="variable">$type</span>);</span><br><span class="line">  my @threads;</span><br><span class="line"></span><br><span class="line">  my <span class="variable">$sth</span> = <span class="variable">$dbh</span>-&gt;prepare(<span class="string">"SHOW PROCESSLIST"</span>);</span><br><span class="line">  <span class="variable">$sth</span>-&gt;execute();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> ( my <span class="variable">$ref</span> = <span class="variable">$sth</span>-&gt;fetchrow_hashref() ) &#123;</span><br><span class="line">    my <span class="variable">$id</span>         = <span class="variable">$ref</span>-&gt;&#123;Id&#125;;</span><br><span class="line">    my <span class="variable">$user</span>       = <span class="variable">$ref</span>-&gt;&#123;User&#125;;</span><br><span class="line">    my <span class="variable">$host</span>       = <span class="variable">$ref</span>-&gt;&#123;Host&#125;;</span><br><span class="line">    my <span class="variable">$command</span>    = <span class="variable">$ref</span>-&gt;&#123;Command&#125;;</span><br><span class="line">    my <span class="variable">$state</span>      = <span class="variable">$ref</span>-&gt;&#123;State&#125;;</span><br><span class="line">    my <span class="variable">$query_time</span> = <span class="variable">$ref</span>-&gt;&#123;Time&#125;;</span><br><span class="line">    my <span class="variable">$info</span>       = <span class="variable">$ref</span>-&gt;&#123;Info&#125;;</span><br><span class="line">    <span class="variable">$info</span> =~ s/^\s*(.*?)\s*$/<span class="variable">$1</span>/ <span class="keyword">if</span> defined(<span class="variable">$info</span>);</span><br><span class="line">    next <span class="keyword">if</span> ( <span class="variable">$my_connection_id</span> == <span class="variable">$id</span> );</span><br><span class="line">    next <span class="keyword">if</span> ( defined(<span class="variable">$query_time</span>) &amp;&amp; <span class="variable">$query_time</span> &lt; <span class="variable">$running_time_threshold</span> );</span><br><span class="line">    next <span class="keyword">if</span> ( defined(<span class="variable">$command</span>)    &amp;&amp; <span class="variable">$command</span> eq <span class="string">"Binlog Dump"</span> );</span><br><span class="line">    next <span class="keyword">if</span> ( defined(<span class="variable">$user</span>)       &amp;&amp; <span class="variable">$user</span> eq <span class="string">"system user"</span> );</span><br><span class="line">    next</span><br><span class="line">      <span class="keyword">if</span> ( defined(<span class="variable">$command</span>)</span><br><span class="line">      &amp;&amp; <span class="variable">$command</span> eq <span class="string">"Sleep"</span></span><br><span class="line">      &amp;&amp; defined(<span class="variable">$query_time</span>)</span><br><span class="line">      &amp;&amp; <span class="variable">$query_time</span> &gt;= 1 );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ( <span class="variable">$type</span> &gt;= 1 ) &#123;</span><br><span class="line">      next <span class="keyword">if</span> ( defined(<span class="variable">$command</span>) &amp;&amp; <span class="variable">$command</span> eq <span class="string">"Sleep"</span> );</span><br><span class="line">      next <span class="keyword">if</span> ( defined(<span class="variable">$command</span>) &amp;&amp; <span class="variable">$command</span> eq <span class="string">"Connect"</span> );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ( <span class="variable">$type</span> &gt;= 2 ) &#123;</span><br><span class="line">      next <span class="keyword">if</span> ( defined(<span class="variable">$info</span>) &amp;&amp; <span class="variable">$info</span> =~ m/^select/i );</span><br><span class="line">      next <span class="keyword">if</span> ( defined(<span class="variable">$info</span>) &amp;&amp; <span class="variable">$info</span> =~ m/^show/i );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    push @threads, <span class="variable">$ref</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">return</span> @threads;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sub main &#123;</span><br><span class="line">  <span class="keyword">if</span> ( <span class="variable">$command</span> eq <span class="string">"stop"</span> ) &#123;</span><br><span class="line">    <span class="comment">## Gracefully killing connections on the current master</span></span><br><span class="line">    <span class="comment"># 1. Set read_only= 1 on the new master</span></span><br><span class="line">    <span class="comment"># 2. DROP USER so that no app user can establish new connections</span></span><br><span class="line">    <span class="comment"># 3. Set read_only= 1 on the current master</span></span><br><span class="line">    <span class="comment"># 4. Kill current queries</span></span><br><span class="line">    <span class="comment"># * Any database access failure will result in script die.</span></span><br><span class="line">    my <span class="variable">$exit_code</span> = 1;</span><br><span class="line">    <span class="built_in">eval</span> &#123;</span><br><span class="line">      <span class="comment">## Setting read_only=1 on the new master (to avoid accident)</span></span><br><span class="line">      my <span class="variable">$new_master_handler</span> = new MHA::DBHelper();</span><br><span class="line"></span><br><span class="line">      <span class="comment"># args: hostname, port, user, password, raise_error(die_on_error)_or_not</span></span><br><span class="line">      <span class="variable">$new_master_handler</span>-&gt;connect( <span class="variable">$new_master_ip</span>, <span class="variable">$new_master_port</span>,</span><br><span class="line">        <span class="variable">$new_master_user</span>, <span class="variable">$new_master_password</span>, 1 );</span><br><span class="line">      <span class="built_in">print</span> current_time_us() . <span class="string">" Set read_only on the new master.. "</span>;</span><br><span class="line">      <span class="variable">$new_master_handler</span>-&gt;enable_read_only();</span><br><span class="line">      <span class="keyword">if</span> ( <span class="variable">$new_master_handler</span>-&gt;is_read_only() ) &#123;</span><br><span class="line">        <span class="built_in">print</span> <span class="string">"ok.\n"</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">        die <span class="string">"Failed!\n"</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="variable">$new_master_handler</span>-&gt;disconnect();</span><br><span class="line"></span><br><span class="line">      <span class="comment"># Connecting to the orig master, die if any database error happens</span></span><br><span class="line">      my <span class="variable">$orig_master_handler</span> = new MHA::DBHelper();</span><br><span class="line">      <span class="variable">$orig_master_handler</span>-&gt;connect( <span class="variable">$orig_master_ip</span>, <span class="variable">$orig_master_port</span>,</span><br><span class="line">        <span class="variable">$orig_master_user</span>, <span class="variable">$orig_master_password</span>, 1 );</span><br><span class="line"></span><br><span class="line">      <span class="comment">## Drop application user so that nobody can connect. Disabling per-session binlog beforehand</span></span><br><span class="line">      <span class="comment">#$orig_master_handler-&gt;disable_log_bin_local();</span></span><br><span class="line">      <span class="comment">#print current_time_us() . " Drpping app user on the orig master..\n";</span></span><br><span class="line">      <span class="comment">#FIXME_xxx_drop_app_user($orig_master_handler);</span></span><br><span class="line"></span><br><span class="line">      <span class="comment">## Waiting for N * 100 milliseconds so that current connections can exit</span></span><br><span class="line">      my <span class="variable">$time_until_read_only</span> = 15;</span><br><span class="line">      <span class="variable">$_tstart</span> = [gettimeofday];</span><br><span class="line">      my @threads = get_threads_util( <span class="variable">$orig_master_handler</span>-&gt;&#123;dbh&#125;,</span><br><span class="line">        <span class="variable">$orig_master_handler</span>-&gt;&#123;connection_id&#125; );</span><br><span class="line">      <span class="keyword">while</span> ( <span class="variable">$time_until_read_only</span> &gt; 0 &amp;&amp; <span class="variable">$#threads</span> &gt;= 0 ) &#123;</span><br><span class="line">        <span class="keyword">if</span> ( <span class="variable">$time_until_read_only</span> % 5 == 0 ) &#123;</span><br><span class="line">          <span class="built_in">printf</span></span><br><span class="line"><span class="string">"%s Waiting all running %d threads are disconnected.. (max %d milliseconds)\n"</span>,</span><br><span class="line">            current_time_us(), <span class="variable">$#threads</span> + 1, <span class="variable">$time_until_read_only</span> * 100;</span><br><span class="line">          <span class="keyword">if</span> ( <span class="variable">$#threads</span> &lt; 5 ) &#123;</span><br><span class="line">            <span class="built_in">print</span> Data::Dumper-&gt;new( [<span class="variable">$_</span>] )-&gt;Indent(0)-&gt;Terse(1)-&gt;Dump . <span class="string">"\n"</span></span><br><span class="line">              foreach (@threads);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        sleep_until();</span><br><span class="line">        <span class="variable">$_tstart</span> = [gettimeofday];</span><br><span class="line">        <span class="variable">$time_until_read_only</span>--;</span><br><span class="line">        @threads = get_threads_util( <span class="variable">$orig_master_handler</span>-&gt;&#123;dbh&#125;,</span><br><span class="line">          <span class="variable">$orig_master_handler</span>-&gt;&#123;connection_id&#125; );</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">## Setting read_only=1 on the current master so that nobody(except SUPER) can write</span></span><br><span class="line">      <span class="built_in">print</span> current_time_us() . <span class="string">" Set read_only=1 on the orig master.. "</span>;</span><br><span class="line">      <span class="variable">$orig_master_handler</span>-&gt;enable_read_only();</span><br><span class="line">      <span class="keyword">if</span> ( <span class="variable">$orig_master_handler</span>-&gt;is_read_only() ) &#123;</span><br><span class="line">        <span class="built_in">print</span> <span class="string">"ok.\n"</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">        die <span class="string">"Failed!\n"</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">## Waiting for M * 100 milliseconds so that current update queries can complete</span></span><br><span class="line">      my <span class="variable">$time_until_kill_threads</span> = 5;</span><br><span class="line">      @threads = get_threads_util( <span class="variable">$orig_master_handler</span>-&gt;&#123;dbh&#125;,</span><br><span class="line">        <span class="variable">$orig_master_handler</span>-&gt;&#123;connection_id&#125; );</span><br><span class="line">      <span class="keyword">while</span> ( <span class="variable">$time_until_kill_threads</span> &gt; 0 &amp;&amp; <span class="variable">$#threads</span> &gt;= 0 ) &#123;</span><br><span class="line">        <span class="keyword">if</span> ( <span class="variable">$time_until_kill_threads</span> % 5 == 0 ) &#123;</span><br><span class="line">          <span class="built_in">printf</span></span><br><span class="line"><span class="string">"%s Waiting all running %d queries are disconnected.. (max %d milliseconds)\n"</span>,</span><br><span class="line">            current_time_us(), <span class="variable">$#threads</span> + 1, <span class="variable">$time_until_kill_threads</span> * 100;</span><br><span class="line">          <span class="keyword">if</span> ( <span class="variable">$#threads</span> &lt; 5 ) &#123;</span><br><span class="line">            <span class="built_in">print</span> Data::Dumper-&gt;new( [<span class="variable">$_</span>] )-&gt;Indent(0)-&gt;Terse(1)-&gt;Dump . <span class="string">"\n"</span></span><br><span class="line">              foreach (@threads);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        sleep_until();</span><br><span class="line">        <span class="variable">$_tstart</span> = [gettimeofday];</span><br><span class="line">        <span class="variable">$time_until_kill_threads</span>--;</span><br><span class="line">        @threads = get_threads_util( <span class="variable">$orig_master_handler</span>-&gt;&#123;dbh&#125;,</span><br><span class="line">          <span class="variable">$orig_master_handler</span>-&gt;&#123;connection_id&#125; );</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                <span class="built_in">print</span> <span class="string">"Disabling the VIP on old master: <span class="variable">$orig_master_host</span> \n"</span>;</span><br><span class="line">                &amp;stop_vip();     </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">      <span class="comment">## Terminating all threads</span></span><br><span class="line">      <span class="built_in">print</span> current_time_us() . <span class="string">" Killing all application threads..\n"</span>;</span><br><span class="line">      <span class="variable">$orig_master_handler</span>-&gt;kill_threads(@threads) <span class="keyword">if</span> ( <span class="variable">$#threads</span> &gt;= 0 );</span><br><span class="line">      <span class="built_in">print</span> current_time_us() . <span class="string">" done.\n"</span>;</span><br><span class="line">      <span class="comment">#$orig_master_handler-&gt;enable_log_bin_local();</span></span><br><span class="line">      <span class="variable">$orig_master_handler</span>-&gt;disconnect();</span><br><span class="line"></span><br><span class="line">      <span class="comment">## After finishing the script, MHA executes FLUSH TABLES WITH READ LOCK</span></span><br><span class="line">      <span class="variable">$exit_code</span> = 0;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$@</span>) &#123;</span><br><span class="line">      warn <span class="string">"Got Error: <span class="variable">$@</span>\n"</span>;</span><br><span class="line">      <span class="built_in">exit</span> <span class="variable">$exit_code</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">exit</span> <span class="variable">$exit_code</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  elsif ( <span class="variable">$command</span> eq <span class="string">"start"</span> ) &#123;</span><br><span class="line">    <span class="comment">## Activating master ip on the new master</span></span><br><span class="line">    <span class="comment"># 1. Create app user with write privileges</span></span><br><span class="line">    <span class="comment"># 2. Moving backup script if needed</span></span><br><span class="line">    <span class="comment"># 3. Register new master's ip to the catalog database</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># We don't return error even though activating updatable accounts/ip failed so that we don't interrupt slaves' recovery.</span></span><br><span class="line"><span class="comment"># If exit code is 0 or 10, MHA does not abort</span></span><br><span class="line">    my <span class="variable">$exit_code</span> = 10;</span><br><span class="line">    <span class="built_in">eval</span> &#123;</span><br><span class="line">      my <span class="variable">$new_master_handler</span> = new MHA::DBHelper();</span><br><span class="line"></span><br><span class="line">      <span class="comment"># args: hostname, port, user, password, raise_error_or_not</span></span><br><span class="line">      <span class="variable">$new_master_handler</span>-&gt;connect( <span class="variable">$new_master_ip</span>, <span class="variable">$new_master_port</span>,</span><br><span class="line">        <span class="variable">$new_master_user</span>, <span class="variable">$new_master_password</span>, 1 );</span><br><span class="line"></span><br><span class="line">      <span class="comment">## Set read_only=0 on the new master</span></span><br><span class="line">      <span class="comment">#$new_master_handler-&gt;disable_log_bin_local();</span></span><br><span class="line">      <span class="built_in">print</span> current_time_us() . <span class="string">" Set read_only=0 on the new master.\n"</span>;</span><br><span class="line">      <span class="variable">$new_master_handler</span>-&gt;disable_read_only();</span><br><span class="line"></span><br><span class="line">      <span class="comment">## Creating an app user on the new master</span></span><br><span class="line">      <span class="comment">#print current_time_us() . " Creating app user on the new master..\n";</span></span><br><span class="line">      <span class="comment">#FIXME_xxx_create_app_user($new_master_handler);</span></span><br><span class="line">      <span class="comment">#$new_master_handler-&gt;enable_log_bin_local();</span></span><br><span class="line">      <span class="variable">$new_master_handler</span>-&gt;disconnect();</span><br><span class="line"></span><br><span class="line">      <span class="comment">## Update master ip on the catalog database, etc</span></span><br><span class="line">                <span class="built_in">print</span> <span class="string">"Enabling the VIP - <span class="variable">$vip</span> on the new master - <span class="variable">$new_master_host</span> \n"</span>;</span><br><span class="line">                &amp;start_vip();</span><br><span class="line">                <span class="variable">$exit_code</span> = 0;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$@</span>) &#123;</span><br><span class="line">      warn <span class="string">"Got Error: <span class="variable">$@</span>\n"</span>;</span><br><span class="line">      <span class="built_in">exit</span> <span class="variable">$exit_code</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">exit</span> <span class="variable">$exit_code</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  elsif ( <span class="variable">$command</span> eq <span class="string">"status"</span> ) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># do nothing</span></span><br><span class="line">    <span class="built_in">exit</span> 0;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    &amp;usage();</span><br><span class="line">    <span class="built_in">exit</span> 1;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># A simple system call that enable the VIP on the new master </span></span><br><span class="line">sub <span class="function"><span class="title">start_vip</span></span>() &#123;</span><br><span class="line">    `ssh <span class="variable">$ssh_user</span>\@<span class="variable">$new_master_host</span> \<span class="string">" <span class="variable">$ssh_start_vip</span> \"`;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"># A simple system call that disable the VIP on the old_master</span></span><br><span class="line"><span class="string">sub stop_vip() &#123;</span></span><br><span class="line"><span class="string">    `ssh <span class="variable">$ssh_user</span>\@<span class="variable">$orig_master_host</span> \" <span class="variable">$ssh_stop_vip</span> \"`;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">sub usage &#123;</span></span><br><span class="line"><span class="string">  print</span></span><br><span class="line"><span class="string">"</span>Usage: master_ip_online_change --<span class="built_in">command</span>=start|stop|status --orig_master_host=host --orig_master_ip=ip --orig_master_port=port --new_master_host=host --new_master_ip=ip --new_master_port=port\n<span class="string">";</span></span><br><span class="line"><span class="string">  die;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>/usr/local/bin/send_report 切换时发送邮件 注：发送邮件需要这台服务器能够连接互联网<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/perl</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#  Copyright (C) 2011 DeNA Co.,Ltd.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#  This program is free software; you can redistribute it and/or modify</span></span><br><span class="line"><span class="comment">#  it under the terms of the GNU General Public License as published by</span></span><br><span class="line"><span class="comment">#  the Free Software Foundation; either version 2 of the License, or</span></span><br><span class="line"><span class="comment">#  (at your option) any later version.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#  This program is distributed in the hope that it will be useful,</span></span><br><span class="line"><span class="comment">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span></span><br><span class="line"><span class="comment">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></span><br><span class="line"><span class="comment">#  GNU General Public License for more details.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#  You should have received a copy of the GNU General Public License</span></span><br><span class="line"><span class="comment">#   along with this program; if not, write to the Free Software</span></span><br><span class="line"><span class="comment">#  Foundation, Inc.,</span></span><br><span class="line"><span class="comment">#  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## <span class="doctag">Note:</span> This is a sample script and is not complete. Modify the script based on your environment.</span></span><br><span class="line"></span><br><span class="line">use strict;</span><br><span class="line">use warnings FATAL =&gt; <span class="string">'all'</span>;</span><br><span class="line">use Mail::Sender;</span><br><span class="line">use Getopt::Long;</span><br><span class="line"></span><br><span class="line"><span class="comment">#new_master_host and new_slave_hosts are set only when recovering master succeeded</span></span><br><span class="line">my ( <span class="variable">$dead_master_host</span>, <span class="variable">$new_master_host</span>, <span class="variable">$new_slave_hosts</span>, <span class="variable">$subject</span>, <span class="variable">$body</span> );</span><br><span class="line">my <span class="variable">$smtp</span>=<span class="string">'smtp.139.com'</span>;</span><br><span class="line">my <span class="variable">$mail_from</span>=<span class="string">'########@139.com'</span>;</span><br><span class="line">my <span class="variable">$mail_user</span>=<span class="string">'########@139.com'</span>;</span><br><span class="line">my <span class="variable">$mail_pass</span>=<span class="string">'########;</span></span><br><span class="line"><span class="string">my $mail_to=['</span><span class="comment">########@139.com','########@baidu.com.cn'];</span></span><br><span class="line">GetOptions(</span><br><span class="line">  <span class="string">'orig_master_host=s'</span> =&gt; \<span class="variable">$dead_master_host</span>,</span><br><span class="line">  <span class="string">'new_master_host=s'</span>  =&gt; \<span class="variable">$new_master_host</span>,</span><br><span class="line">  <span class="string">'new_slave_hosts=s'</span>  =&gt; \<span class="variable">$new_slave_hosts</span>,</span><br><span class="line">  <span class="string">'subject=s'</span>          =&gt; \<span class="variable">$subject</span>,</span><br><span class="line">  <span class="string">'body=s'</span>             =&gt; \<span class="variable">$body</span>,</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">mailToContacts(<span class="variable">$smtp</span>,<span class="variable">$mail_from</span>,<span class="variable">$mail_user</span>,<span class="variable">$mail_pass</span>,<span class="variable">$mail_to</span>,<span class="variable">$subject</span>,<span class="variable">$body</span>);</span><br><span class="line"></span><br><span class="line">sub mailToContacts &#123;</span><br><span class="line">    my ( <span class="variable">$smtp</span>, <span class="variable">$mail_from</span>, <span class="variable">$user</span>, <span class="variable">$passwd</span>, <span class="variable">$mail_to</span>, <span class="variable">$subject</span>, <span class="variable">$msg</span> ) = @_;</span><br><span class="line">    open my <span class="variable">$DEBUG</span>, <span class="string">"&gt; /tmp/monitormail.log"</span></span><br><span class="line">        or die <span class="string">"Can't open the debug      file:$!\n"</span>;</span><br><span class="line">    my <span class="variable">$sender</span> = new Mail::Sender &#123;</span><br><span class="line">        ctype       =&gt; <span class="string">'text/plain; charset=utf-8'</span>,</span><br><span class="line">        encoding    =&gt; <span class="string">'utf-8'</span>,</span><br><span class="line">        smtp        =&gt; <span class="variable">$smtp</span>,</span><br><span class="line">        from        =&gt; <span class="variable">$mail_from</span>,</span><br><span class="line">        auth        =&gt; <span class="string">'LOGIN'</span>,</span><br><span class="line">        TLS_allowed =&gt; <span class="string">'0'</span>,</span><br><span class="line">        authid      =&gt; <span class="variable">$user</span>,</span><br><span class="line">        authpwd     =&gt; <span class="variable">$passwd</span>,</span><br><span class="line">        to          =&gt; <span class="variable">$mail_to</span>,</span><br><span class="line">        subject     =&gt; <span class="variable">$subject</span>,</span><br><span class="line">        debug       =&gt; <span class="variable">$DEBUG</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="variable">$sender</span>-&gt;MailMsg(</span><br><span class="line">        &#123;   msg   =&gt; <span class="variable">$msg</span>,</span><br><span class="line">            debug =&gt; <span class="variable">$DEBUG</span></span><br><span class="line">        &#125;</span><br><span class="line">    ) or <span class="built_in">print</span> <span class="variable">$Mail</span>::Sender::Error;</span><br><span class="line">    <span class="built_in">return</span> 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># Do whatever you want here</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">exit</span> 0;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="每台slave设置定时清除relay日志脚本"><a href="#每台slave设置定时清除relay日志脚本" class="headerlink" title="每台slave设置定时清除relay日志脚本"></a>每台slave设置定时清除relay日志脚本</h4><blockquote>
+<p>MHA在发生切换的过程中，从库的恢复过程中依赖于relay log的相关信息，所以这里要将relay log的自动清除设置为OFF，采用手动清除relay log的方式。在默认情况下，从服务器上的中继日志会在SQL线程执行完毕后被自动删除。但是在MHA环境中，这些中继日志在恢复其他从服务器时可能会被用到，因此需要禁用中继日志的自动删除功能。定期清除中继日志需要考虑到复制延时的问题。在ext3的文件系统下，删除大的文件需要一定的时间，会导致严重的复制延时。为了避免复制延时，需要暂时为中继日志创建硬链接，因为在linux系统中通过硬链接删除大文件速度会很快。（在mysql数据库中，删除大表时，通常也采用建立硬链接的方式）</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment">#此脚本添加至定时任务，每天凌晨四点执行，定时任务示例如下：</span></span><br><span class="line"><span class="comment">#0 4 * * * /bin/bash /usr/local/bin/purge_relay_log.sh</span></span><br><span class="line">user=root</span><br><span class="line">passwd=mvtech123</span><br><span class="line">port=3306</span><br><span class="line">log_dir=<span class="string">'/var/log/masterha/'</span></span><br><span class="line"><span class="comment">#relay日志的目录</span></span><br><span class="line">work_dir=<span class="string">'/mvtech/mysql/logs/relay'</span></span><br><span class="line">purge=<span class="string">'/usr/bin/purge_relay_logs'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ ! -d <span class="variable">$log_dir</span> ]</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">   mkdir <span class="variable">$log_dir</span> -p</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$purge</span> --user=<span class="variable">$user</span> --password=<span class="variable">$passwd</span> --disable_relay_log_purge --port=<span class="variable">$port</span> --workdir=<span class="variable">$work_dir</span> &gt;&gt; <span class="variable">$log_dir</span>/purge_relay_logs.log 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+<h4 id="验证集群配置情况"><a href="#验证集群配置情况" class="headerlink" title="验证集群配置情况"></a>验证集群配置情况</h4><blockquote>
+<p>验证ssh互信：masterha_check_ssh –conf=/etc/masterha/app1.conf </p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/23/5bf791b401f91.png" alt="ssh检查.png" title="ssh检查.png"></center>
+
+<blockquote>
+<p>验证复制状态：masterha_check_repl –conf=/etc/masterha/app1.conf</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/23/5bf791b41b9dd.png" alt="repl检查.png" title="repl检查.png"></center>
+
+<blockquote>
+<p>验证集群状态：masterha_check_status –conf=/etc/masterha/app1.conf</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/23/5bf791b3727dd.png" alt="检查manager状态.png" title="检查manager状态.png"></center>
+
+<h4 id="启动manager服务"><a href="#启动manager服务" class="headerlink" title="启动manager服务"></a>启动manager服务</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup masterha_manager --conf=/etc/masterha/app1.conf --ignore_last_failover &lt; /dev/null &gt; /var/<span class="built_in">log</span>/masterha/app1/manager.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>集群可用状态</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/11/23/5bf791b40135f.png" alt="状态ok.png" title="状态ok.png"></center>
+
+<h1 id="模拟故障，验证集群的可用性"><a href="#模拟故障，验证集群的可用性" class="headerlink" title="模拟故障，验证集群的可用性"></a>模拟故障，验证集群的可用性</h1><h2 id="失败自动切换-模拟master主机msyql挂掉，并恢复集群"><a href="#失败自动切换-模拟master主机msyql挂掉，并恢复集群" class="headerlink" title="失败自动切换 模拟master主机msyql挂掉，并恢复集群"></a>失败自动切换 模拟master主机msyql挂掉，并恢复集群</h2><h3 id="关闭master主机"><a href="#关闭master主机" class="headerlink" title="关闭master主机"></a>关闭master主机</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop mysqld</span><br></pre></td></tr></table></figure>
+<h3 id="查看manage日志"><a href="#查看manage日志" class="headerlink" title="查看manage日志"></a>查看manage日志</h3><blockquote>
+<p>tail -f /var/log/masterha/app1/manager.log </p>
+</blockquote>
+<blockquote>
+<p>通过查看日志，会看到自动切换的过程，并发送邮件</p>
+</blockquote>
+<h3 id="检查备用master是否提升为主节点"><a href="#检查备用master是否提升为主节点" class="headerlink" title="检查备用master是否提升为主节点"></a>检查备用master是否提升为主节点</h3><blockquote>
+<p>检查vip是否漂在node72节点上<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip addr</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>查看目前node72上是否还属于node73的slave节点<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">slave</span> <span class="keyword">status</span>\G</span><br><span class="line"><span class="comment"># 经检查 已不是slave节点</span></span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="检查独立slave主机的主从复制状态"><a href="#检查独立slave主机的主从复制状态" class="headerlink" title="检查独立slave主机的主从复制状态"></a>检查独立slave主机的主从复制状态</h3><blockquote>
+<p>通过检查复制状态，发现现在node01节点的master节点变为node72<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show slave status\G</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="恢复集群"><a href="#恢复集群" class="headerlink" title="恢复集群"></a>恢复集群</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1.通过备份工具将node72上数据同步至node73节点上，并以node02作为master节点配置node03位slave节点；</span><br><span class="line">2.在node03节点上执行sql：</span><br><span class="line">    <span class="built_in">set</span> global relay_log_purge=0;</span><br><span class="line">    <span class="built_in">set</span> global read_only=1;</span><br><span class="line">3.修改node01上集群的配置文件/etc/masterha/app1.conf，将原来node03作为master的配置改为node02</span><br><span class="line">4.使用集群验证脚本验证ssh互信、复制状态等是否ok</span><br><span class="line">5.启动manager继续监控集群</span><br><span class="line">6.至此，集群恢复完毕</span><br></pre></td></tr></table></figure>
+<h2 id="在线切换master"><a href="#在线切换master" class="headerlink" title="在线切换master"></a>在线切换master</h2><blockquote>
+<p> 在许多情况下， 需要将现有的主服务器迁移到另外一台服务器上。 比如主服务器硬件故障，RAID 控制卡需要重建，将主服务器移到性能更好的服务器上等等。维护主服务器引起性能下降， 导致停机时间至少无法写入数据。 另外， 阻塞或杀掉当前运行的会话会导致主主之间数据不一致的问题发生。 MHA 提供快速切换和优雅的阻塞写入，这个切换过程只需要 0.5-2s 的时间，这段时间内数据是无法写入的。在很多情况下，0.5-2s 的阻塞写入是可以接受的。因此切换主服务器不需要计划分配维护时间窗口。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">1.停止mha集群监控</span><br><span class="line">    masterha_stop --conf=/etc/masterha/app1.conf</span><br><span class="line">2.执行切换命令</span><br><span class="line">    masterha_master_switch --conf=/etc/masterha/app1.conf --master_state=alive --new_master_host=node72 --new_master_port=3306 --orig_master_is_new_slave --running_updates_limit=10000 --interactive=0</span><br><span class="line">3.验证node72是否变成master节点</span><br><span class="line"></span><br><span class="line"><span class="comment">#从72切到73</span></span><br><span class="line">masterha_master_switch --conf=/etc/masterha/app1.conf_node72 --master_state=alive --new_master_host=node73 --new_master_port=3306 --orig_master_is_new_slave --running_updates_limit=10000 --interactive=0</span><br><span class="line"><span class="comment">#从73切到72</span></span><br><span class="line">masterha_master_switch --conf=/etc/masterha/app1.conf --master_state=alive --new_master_host=node72 --new_master_port=3306 --orig_master_is_new_slave --running_updates_limit=10000 --interactive=0</span><br></pre></td></tr></table></figure>
+<h2 id="失败手工切换"><a href="#失败手工切换" class="headerlink" title="失败手工切换"></a>失败手工切换</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">masterha_master_switch --master_state=dead --conf=/etc/masterha/app1.conf --dead_master_host=node73 --dead_master_port=3306 --new_master_host=node72 --new_master_port=3306 --ignore_last_failover --interactive=0</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line"><span class="comment"># 维护mha集群</span></span><br><span class="line"><span class="comment">## 停止集群</span></span><br><span class="line"><span class="comment">### 关闭mha-manager监控脚本</span></span><br><span class="line">``` bash</span><br><span class="line">masterha_stop --conf=/etc/masterha/app1.conf</span><br></pre></td></tr></table></figure>
+<h3 id="关闭master节点上的虚地址"><a href="#关闭master节点上的虚地址" class="headerlink" title="关闭master节点上的虚地址"></a>关闭master节点上的虚地址</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/sbin/ifconfig ens3:1 down</span><br><span class="line">``` </span><br><span class="line"><span class="comment">### 关闭master节点上的mysql</span></span><br><span class="line">``` bash</span><br><span class="line">systemctl stop mysqld</span><br></pre></td></tr></table></figure>
+<h3 id="关闭两台slave节点上的mysql"><a href="#关闭两台slave节点上的mysql" class="headerlink" title="关闭两台slave节点上的mysql"></a>关闭两台slave节点上的mysql</h3><blockquote>
+<p>分别在两台slave上执行<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop mysqld</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="至此，mha集群关闭结束"><a href="#至此，mha集群关闭结束" class="headerlink" title="至此，mha集群关闭结束"></a>至此，mha集群关闭结束</h3><h2 id="启动集群"><a href="#启动集群" class="headerlink" title="启动集群"></a>启动集群</h2><h3 id="启动两台slave上的mysql，两台备库设置"><a href="#启动两台slave上的mysql，两台备库设置" class="headerlink" title="启动两台slave上的mysql，两台备库设置"></a>启动两台slave上的mysql，两台备库设置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemct start mysqld</span><br><span class="line"><span class="built_in">set</span> global relay_log_purge=0;</span><br><span class="line"><span class="built_in">set</span> global read_only=1;</span><br></pre></td></tr></table></figure>
+<h3 id="启动master上的mysql"><a href="#启动master上的mysql" class="headerlink" title="启动master上的mysql"></a>启动master上的mysql</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemct start mysqld</span><br></pre></td></tr></table></figure>
+<h3 id="启动master上的vip"><a href="#启动master上的vip" class="headerlink" title="启动master上的vip"></a>启动master上的vip</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/sbin/ifconfig ens3:1 192.168.2.74/24</span><br><span class="line">注：若使用keepalived则使用systemctl start keepalived</span><br></pre></td></tr></table></figure>
+<h3 id="使用mha脚本监测集群状态："><a href="#使用mha脚本监测集群状态：" class="headerlink" title="使用mha脚本监测集群状态："></a>使用mha脚本监测集群状态：</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">masterha_check_ssh --conf=/etc/masterha/app1.conf </span><br><span class="line">masterha_check_repl --conf=/etc/masterha/app1.conf</span><br><span class="line">masterha_check_status --conf=/etc/masterha/app1.conf</span><br></pre></td></tr></table></figure>
+<h3 id="若没有问题，则启动manager进行监控集群"><a href="#若没有问题，则启动manager进行监控集群" class="headerlink" title="若没有问题，则启动manager进行监控集群"></a>若没有问题，则启动manager进行监控集群</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup masterha_manager --conf=/etc/masterha/app1.conf --remove_dead_master_conf --ignore_last_failover &lt; /dev/null &gt; /var/<span class="built_in">log</span>/masterha/app1/manager.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>检查集群状态<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">masterha_check_status --conf=/etc/masterha/app1.conf</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="至此集群启动完毕"><a href="#至此集群启动完毕" class="headerlink" title="至此集群启动完毕"></a>至此集群启动完毕</h3>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+       
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
+          
+            <a href="/tags/高可用架构/" rel="tag"># 高可用架构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/01/docker入门指南/" rel="next" title="docker入门指南">
+                <i class="fa fa-chevron-left"></i> docker入门指南
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/01/mysql版本升级/" rel="prev" title="mysql的版本升级">
+                mysql的版本升级 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">杨航</p>
+              <p class="site-description motion-element" itemprop="description">所有的伟大，都源于一个勇敢的开始。</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#原理介绍"><span class="nav-number">1.1.</span> <span class="nav-text">原理介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mha集群架构图"><span class="nav-number">1.1.1.</span> <span class="nav-text">mha集群架构图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工作原理"><span class="nav-number">1.1.2.</span> <span class="nav-text">工作原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#软件构成"><span class="nav-number">1.2.</span> <span class="nav-text">软件构成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Manager工具包"><span class="nav-number">1.2.1.</span> <span class="nav-text">Manager工具包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Node工具包"><span class="nav-number">1.2.2.</span> <span class="nav-text">Node工具包</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考地址"><span class="nav-number">1.3.</span> <span class="nav-text">参考地址</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#部署规划"><span class="nav-number">2.</span> <span class="nav-text">部署规划</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#部署规划-1"><span class="nav-number">2.1.</span> <span class="nav-text">部署规划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#yum源配置"><span class="nav-number">2.2.</span> <span class="nav-text">yum源配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装包和相关脚本获取"><span class="nav-number">2.3.</span> <span class="nav-text">安装包和相关脚本获取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作系统环境"><span class="nav-number">2.4.</span> <span class="nav-text">操作系统环境</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#部署集群"><span class="nav-number">3.</span> <span class="nav-text">部署集群</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装mysql"><span class="nav-number">3.1.</span> <span class="nav-text">安装mysql</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置主从复制"><span class="nav-number">3.2.</span> <span class="nav-text">配置主从复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置mha集群"><span class="nav-number">3.3.</span> <span class="nav-text">配置mha集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置各个节点之间的主机互信"><span class="nav-number">3.3.1.</span> <span class="nav-text">配置各个节点之间的主机互信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置node节点"><span class="nav-number">3.3.2.</span> <span class="nav-text">配置node节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置manager节点"><span class="nav-number">3.3.3.</span> <span class="nav-text">配置manager节点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#安装"><span class="nav-number">3.3.3.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改配置文件"><span class="nav-number">3.3.3.2.</span> <span class="nav-text">修改配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建相应脚本-脚本需要有可执行权限"><span class="nav-number">3.3.3.3.</span> <span class="nav-text">创建相应脚本,脚本需要有可执行权限</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#每台slave设置定时清除relay日志脚本"><span class="nav-number">3.3.3.4.</span> <span class="nav-text">每台slave设置定时清除relay日志脚本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证集群配置情况"><span class="nav-number">3.3.3.5.</span> <span class="nav-text">验证集群配置情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动manager服务"><span class="nav-number">3.3.3.6.</span> <span class="nav-text">启动manager服务</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模拟故障，验证集群的可用性"><span class="nav-number">4.</span> <span class="nav-text">模拟故障，验证集群的可用性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#失败自动切换-模拟master主机msyql挂掉，并恢复集群"><span class="nav-number">4.1.</span> <span class="nav-text">失败自动切换 模拟master主机msyql挂掉，并恢复集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关闭master主机"><span class="nav-number">4.1.1.</span> <span class="nav-text">关闭master主机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看manage日志"><span class="nav-number">4.1.2.</span> <span class="nav-text">查看manage日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检查备用master是否提升为主节点"><span class="nav-number">4.1.3.</span> <span class="nav-text">检查备用master是否提升为主节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检查独立slave主机的主从复制状态"><span class="nav-number">4.1.4.</span> <span class="nav-text">检查独立slave主机的主从复制状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#恢复集群"><span class="nav-number">4.1.5.</span> <span class="nav-text">恢复集群</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在线切换master"><span class="nav-number">4.2.</span> <span class="nav-text">在线切换master</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#失败手工切换"><span class="nav-number">4.3.</span> <span class="nav-text">失败手工切换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关闭master节点上的虚地址"><span class="nav-number">4.3.1.</span> <span class="nav-text">关闭master节点上的虚地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关闭两台slave节点上的mysql"><span class="nav-number">4.3.2.</span> <span class="nav-text">关闭两台slave节点上的mysql</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#至此，mha集群关闭结束"><span class="nav-number">4.3.3.</span> <span class="nav-text">至此，mha集群关闭结束</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动集群"><span class="nav-number">4.4.</span> <span class="nav-text">启动集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#启动两台slave上的mysql，两台备库设置"><span class="nav-number">4.4.1.</span> <span class="nav-text">启动两台slave上的mysql，两台备库设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动master上的mysql"><span class="nav-number">4.4.2.</span> <span class="nav-text">启动master上的mysql</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动master上的vip"><span class="nav-number">4.4.3.</span> <span class="nav-text">启动master上的vip</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用mha脚本监测集群状态："><span class="nav-number">4.4.4.</span> <span class="nav-text">使用mha脚本监测集群状态：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#若没有问题，则启动manager进行监控集群"><span class="nav-number">4.4.5.</span> <span class="nav-text">若没有问题，则启动manager进行监控集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#至此集群启动完毕"><span class="nav-number">4.4.6.</span> <span class="nav-text">至此集群启动完毕</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">杨航</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v6.6.0</div>
+
+
+<div>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<span id="busuanzi_container_site_pv" style="display:none">
+    本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+    <span class="post-meta-divider">|</span>
+</span>
+<span id="busuanzi_container_site_uv" style="display:none">
+    有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+      
+  
+  <script type="text/javascript" color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.6.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.6.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.6.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.6.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.6.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.6.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.6.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

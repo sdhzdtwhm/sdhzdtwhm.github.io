@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>杨航的博客</title>
+  <icon>https://www.gravatar.com/avatar/a1a9f60c2cc8d315c990030a74f8c9da</icon>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://sdhzdtwhm.github.io/"/>
+  <updated>2018-12-19T01:38:38.709Z</updated>
+  <id>https://sdhzdtwhm.github.io/</id>
+  
+  <author>
+    <name>杨航</name>
+    <email>yanghang0717@139.com</email>
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>mysql配置文件示例</title>
+    <link href="https://sdhzdtwhm.github.io/2018/12/05/mysql%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%A4%BA%E4%BE%8B/"/>
+    <id>https://sdhzdtwhm.github.io/2018/12/05/mysql配置文件示例/</id>
+    <published>2018-12-05T05:57:06.000Z</published>
+    <updated>2018-12-19T01:38:38.709Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;介绍&quot;&gt;&lt;a href=&quot;#介绍&quot; class=&quot;headerlink&quot; title=&quot;介绍&quot;&gt;&lt;/a&gt;介绍&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;本文通过举例演示生产环境中mysql配置文件如何进行配置，用于参考。&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="mysql" scheme="https://sdhzdtwhm.github.io/categories/mysql/"/>
+    
+    
+      <category term="mysql" scheme="https://sdhzdtwhm.github.io/tags/mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>xtrabackup备份使用指南</title>
+    <link href="https://sdhzdtwhm.github.io/2018/12/04/xtrabackup%E4%BD%BF%E7%94%A8/"/>
+    <id>https://sdhzdtwhm.github.io/2018/12/04/xtrabackup使用/</id>
+    <published>2018-12-04T03:26:07.000Z</published>
+    <updated>2018-12-19T02:03:04.834Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;介绍&quot;&gt;&lt;a href=&quot;#介绍&quot; class=&quot;headerlink&quot; title=&quot;介绍&quot;&gt;&lt;/a&gt;介绍&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;本文用来介绍如何使用percona公司的xtrabackup备份工具&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="mysql" scheme="https://sdhzdtwhm.github.io/categories/mysql/"/>
+    
+    
+      <category term="mysql" scheme="https://sdhzdtwhm.github.io/tags/mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>mysql常用统计sql</title>
+    <link href="https://sdhzdtwhm.github.io/2018/12/02/mysql%E5%B8%B8%E7%94%A8%E7%BB%9F%E8%AE%A1sql/"/>
+    <id>https://sdhzdtwhm.github.io/2018/12/02/mysql常用统计sql/</id>
+    <published>2018-12-02T05:51:06.000Z</published>
+    <updated>2018-12-19T01:51:16.435Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;介绍&quot;&gt;&lt;a href=&quot;#介绍&quot; class=&quot;headerlink&quot; title=&quot;介绍&quot;&gt;&lt;/a&gt;介绍&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;系统维护中经常会用到统计mysql数据库中数据量大小的需要，因此今天整理了一下常用的几个mysql统计数据库信息的sql，方便以后使用。mysql5.6中自带的information_schema数据库，此库中装的是mysql的元数据，包括数据库信息、数据库中表的信息等。所以要想查询数据库占用磁盘的空间大小可以通过对information_schema数据库进行操作。&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="mysql" scheme="https://sdhzdtwhm.github.io/categories/mysql/"/>
+    
+    
+      <category term="mysql" scheme="https://sdhzdtwhm.github.io/tags/mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>cdh5.11.2快速配置文档</title>
+    <link href="https://sdhzdtwhm.github.io/2018/12/01/CDH5.11.2%E5%BF%AB%E9%80%9F%E9%85%8D%E7%BD%AE%E6%96%87%E6%A1%A3/"/>
+    <id>https://sdhzdtwhm.github.io/2018/12/01/CDH5.11.2快速配置文档/</id>
+    <published>2018-12-01T03:30:06.000Z</published>
+    <updated>2018-12-19T02:22:11.940Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;1-概述&quot;&gt;&lt;a href=&quot;#1-概述&quot; class=&quot;headerlink&quot; title=&quot;1 概述&quot;&gt;&lt;/a&gt;1 概述&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;本文档用于搭建impala开发测试环境,配置yarn-ha和hdfs-ha&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="大数据" scheme="https://sdhzdtwhm.github.io/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+    
+    
+      <category term="大数据" scheme="https://sdhzdtwhm.github.io/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>mysql的版本升级</title>
+    <link href="https://sdhzdtwhm.github.io/2018/12/01/mysql%E7%89%88%E6%9C%AC%E5%8D%87%E7%BA%A7/"/>
+    <id>https://sdhzdtwhm.github.io/2018/12/01/mysql版本升级/</id>
+    <published>2018-12-01T03:26:08.000Z</published>
+    <updated>2018-12-19T01:52:05.271Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;介绍&quot;&gt;&lt;a href=&quot;#介绍&quot; class=&quot;headerlink&quot; title=&quot;介绍&quot;&gt;&lt;/a&gt;介绍&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;本文介绍针对于Unix/Linux下二进制mysql的版本升级，&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="mysql" scheme="https://sdhzdtwhm.github.io/categories/mysql/"/>
+    
+    
+      <category term="mysql" scheme="https://sdhzdtwhm.github.io/tags/mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>mha入门实战</title>
+    <link href="https://sdhzdtwhm.github.io/2018/11/01/MHA%E5%85%A5%E9%97%A8%E5%AE%9E%E6%88%98/"/>
+    <id>https://sdhzdtwhm.github.io/2018/11/01/MHA入门实战/</id>
+    <published>2018-11-01T01:39:06.000Z</published>
+    <updated>2018-12-19T01:55:03.795Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;介绍&quot;&gt;&lt;a href=&quot;#介绍&quot; class=&quot;headerlink&quot; title=&quot;介绍&quot;&gt;&lt;/a&gt;介绍&lt;/h1&gt;&lt;h2 id=&quot;原理介绍&quot;&gt;&lt;a href=&quot;#原理介绍&quot; class=&quot;headerlink&quot; title=&quot;原理介绍&quot;&gt;&lt;/a&gt;原理介绍&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;MHA（Master High Availability）目前在MySQL高可用方面是一个相对成熟的解决方案，它由日本DeNA公司youshimaton（现就职于Facebook公司）开发，是一套优秀的作为MySQL高可用性环境下故障切换和主从提升的高可用软件。在MySQL故障切换过程中，MHA能做到在0~30秒之内自动完成数据库的故障切换操作，并且在进行故障切换的过程中，MHA能在最大程度上保证数据的一致性，以达到真正意义上的高可用。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;mha集群架构图&quot;&gt;&lt;a href=&quot;#mha集群架构图&quot; class=&quot;headerlink&quot; title=&quot;mha集群架构图&quot;&gt;&lt;/a&gt;mha集群架构图&lt;/h3&gt;&lt;center&gt; &lt;img src=&quot;https://i.loli.net/2018/11/23/5bf797dc1ecf6.png&quot; alt=&quot;mha.png&quot; title=&quot;mha.png&quot;&gt;&lt;/center&gt;
+    
+    </summary>
+    
+      <category term="mysql" scheme="https://sdhzdtwhm.github.io/categories/mysql/"/>
+    
+    
+      <category term="mysql" scheme="https://sdhzdtwhm.github.io/tags/mysql/"/>
+    
+      <category term="高可用架构" scheme="https://sdhzdtwhm.github.io/tags/%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9E%B6%E6%9E%84/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>docker入门指南</title>
+    <link href="https://sdhzdtwhm.github.io/2018/10/01/docker%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/"/>
+    <id>https://sdhzdtwhm.github.io/2018/10/01/docker入门指南/</id>
+    <published>2018-10-01T01:39:06.000Z</published>
+    <updated>2018-12-19T02:02:43.426Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h3&gt;&lt;h4 id=&quot;什么是docker&quot;&gt;&lt;a href=&quot;#什么是docker&quot; class=&quot;headerlink&quot; title=&quot;什么是docker&quot;&gt;&lt;/a&gt;什么是docker&lt;/h4&gt;&lt;h4 id=&quot;docker优点&quot;&gt;&lt;a href=&quot;#docker优点&quot; class=&quot;headerlink&quot; title=&quot;docker优点&quot;&gt;&lt;/a&gt;docker优点&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;不需要安装操作系统，秒级启动，可充分利用服务器资源&lt;/li&gt;
+&lt;li&gt;方便部署&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="docker" scheme="https://sdhzdtwhm.github.io/categories/docker/"/>
+    
+    
+      <category term="docker" scheme="https://sdhzdtwhm.github.io/tags/docker/"/>
+    
+  </entry>
+  
+</feed>
