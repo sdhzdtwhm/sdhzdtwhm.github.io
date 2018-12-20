@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[lepus数据库监控系统快速使用]]></title>
+    <url>%2F2018%2F12%2F20%2Flepus%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F%E4%BD%BF%E7%94%A8%2F</url>
+    <content type="text"><![CDATA[1 介绍 Lepus(天兔)数据库企业监控系统是一套由专业DBA针对互联网企业开发的一款专业、强大的企业数据库监控管理系统，企业通过Lepus可以对数据库的实时健康和各种性能指标进行全方位的监控。目前已经支持MySQL、Oracle、MongoDB、Redis数据库的全面监控. Lepus可以在数据库出现故障或者潜在性能问题时,根据用户设置及时将数据库的异常进行报警通知到数据库管理员进行处理和优化,帮助企业解决数据库性能监控问题，及时发现性能和瓶颈,避免由数据库潜在问题造成的直接经济损失。Lepus能够查看各种实时性能状态指标，并且对监控、性能数据进行统计分析，从运维者到决策者多个层面的视角，查看相关报表。帮助决策者对未来数据库容量进行更好的规划，从而降低了硬件成本。 2 环境部署说明 官方说明文档中是指导安装lamp环境配置监控系统。通过搜索发现已制作docker镜像，因此我们直接使用docker镜像快速搭建环境。操作系统为centos7.4,ip地址为：192.168.2.75 3 部署步骤 注：安装docker前请关闭selinux，和配置防火墙能够开放端口(80和3306端口) 3.1 安装docker1yum install docker -y 3.2 启动docker服务，并设置开机自启动1systemctl start docker &amp;&amp; systemctl enable docker 3.3 创建数据库存放文件夹1mkdir -p /opt/mysql 3.4 启动镜像123docker run -d --name=lepus -p 80:80 -p 3306:3306 \-v /opt/mysql:/var/lib/mysql -v /etc/timelocal:/etc/timelocal \georce/lepus 4 使用系统4.1 登陆系统123url:http://192.168.2.75/用户名：admin密码：Lepusadmin 4.2 登陆系统后界面示例截图展示 4.3 详细使用请参照官方文档 官方文档连接 4.4 参考地址 https://github.com/Georce/lepus]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[mysql配置文件示例]]></title>
     <url>%2F2018%2F12%2F05%2Fmysql%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%A4%BA%E4%BE%8B%2F</url>
     <content type="text"><![CDATA[介绍 本文通过举例演示生产环境中mysql配置文件如何进行配置，用于参考。 配置文件名称my.cnf 文件目录:一般为/etc/my.cnf 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131# MySQL configuration is created by yanghang[client]port = 3306socket = /tmp/mysql.sockuser=rootpassword=123456#The MySQL server###############Basic###############[mysqld]server-id=71report-host=192.168.2.71port = 3306user = mysql#禁止域名解析skip-name-resolveskip-external-locking#数据目录basedir=/data/mysqldatadir=/data/mysql/datasocket=/tmp/mysql.sock#服务端默认编码character_set_server = utf8#服务端默认的对比规则，排序规则collation_server=utf8_general_ci#slave库需要设置#read_only=1#超时时间wait_timeout=100interactive_timeout=100#事件开关event_scheduler = OFF###############binlog################不强制限制存储函数创建,这个变量也适用于触发器创建log_bin_trust_function_creators = 1#binlog存储地址log_bin = /data/mysql/logs/binlog/mysql-bin#binlog格式binlog_format = row#binlog过期时间expire-logs-days = 7#binlog缓存日志binlog_cache_size = 2M#控制数据库的binlog是否刷新到磁盘，高并发的环境开启对IO影响很大#sync_binlog = 1###主主复制时使用###修改将主从的offset分别设成1和2#自增初始值#auto_increment_offset = 1#自增间隔#auto_increment_increment = 2###############log_error################错误日志配置log_error = /data/mysql/logs/mysql-error.log###############slow log###############slow_query_log = 1slow_query_log_file = /data/mysql/logs/mysql-slow.loglong_query_time = 5###############relay日志#############relay_log = /data/mysql/logs/relay/mysql-relay-bin.logrelay_log_info_file = /data/mysql/logs/relay/mysql-relay-log.inforelay_log_purge=0###############半同步复制##############plugin-load = &quot;rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so&quot;#rpl-semi-sync-master-enabled = 1#rpl-semi-sync-slave-enabled = 1#rpl_semi_sync_master_wait_no_slave = 1#rpl_semi_sync_master_timeout = 1000###############innodb##############innodb_data_file_path = ibdata1:2G:autoextendinnodb_file_per_table = 1innodb_open_files = 500innodb_write_io_threads = 32innodb_read_io_threads = 32#一般设置为内存的80%innodb_buffer_pool_size = 1Ginnodb_file_per_table = 1#生产环境可以设置为1024Minnodb_log_file_size = 50Minnodb_log_buffer_size = 64Minnodb_log_files_in_group = 3innodb_file_format = Barracudainnodb_flush_log_at_trx_commit = 2innodb_buffer_pool_instances = 8#5.6.42报已InnoDB: Warning: Using innodb_additional_mem_pool_size is DEPRECATED. This option may be removed in future releases, together with the option innodb_use_sys_malloc and with the InnoDB&apos;s internal memory allocator.#innodb_additional_mem_pool_size = 16Minnodb_lock_wait_timeout = 10innodb_flush_method = O_DIRECTinnodb_change_buffering = allinnodb_purge_threads = 1innodb_purge_batch_size = 32transaction_isolation = READ-COMMITTED###############per_thread_buffers#############max_connections = 1024max_user_connections = 1000max_connect_errors = 10000lower_case_table_names = 1key_buffer_size = 64Mtable_open_cache = 6144table_definition_cache = 4096sort_buffer_size = 512Kread_buffer_size = 512Kjoin_buffer_size = 512Ktmp_table_size = 64Mmax_heap_table_size = 64Mquery_cache_type=0query_cache_size=0bulk_insert_buffer_size = 32Mthread_cache_size = 64thread_stack = 256Kmax_allowed_packet = 1024M#mysql5.6和mysql5.7默认的sql_mode不一样#sql_mode = STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION[mysqld_safe]#若要开启此选项则需要安装jemalloc#malloc-lib=/usr/lib64/libjemalloc.so.1open_files_limit = 65535[mysqldump]quickmax_allowed_packet = 1024M net_buffer_length = 16384user=rootpassword=123456[mysql]auto-rehash[mysqlhotcopy]interactive-timeout]]></content>
@@ -42,17 +53,6 @@
       </categories>
       <tags>
         <tag>大数据</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[lepus数据库监控系统快速使用]]></title>
-    <url>%2F2018%2F12%2F01%2Flepus%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F%E4%BD%BF%E7%94%A8%2F</url>
-    <content type="text"><![CDATA[1 介绍 Lepus(天兔)数据库企业监控系统是一套由专业DBA针对互联网企业开发的一款专业、强大的企业数据库监控管理系统，企业通过Lepus可以对数据库的实时健康和各种性能指标进行全方位的监控。目前已经支持MySQL、Oracle、MongoDB、Redis数据库的全面监控. Lepus可以在数据库出现故障或者潜在性能问题时,根据用户设置及时将数据库的异常进行报警通知到数据库管理员进行处理和优化,帮助企业解决数据库性能监控问题，及时发现性能和瓶颈,避免由数据库潜在问题造成的直接经济损失。Lepus能够查看各种实时性能状态指标，并且对监控、性能数据进行统计分析，从运维者到决策者多个层面的视角，查看相关报表。帮助决策者对未来数据库容量进行更好的规划，从而降低了硬件成本。 2 环境部署说明 官方说明文档中是指导安装lamp环境配置监控系统。通过搜索发现https://github.com/Georce/lepus已制作docker镜像，因此我们直接使用docker镜像快速搭建环境。操作系统为centos7.4,ip地址为：192.168.2.75 3 部署步骤 注：安装docker前请关闭selinux，和配置防火墙能够开放端口(80和3306端口) 3.1 安装docker1yum install docker -y 3.2 启动docker服务，并设置开机自启动1systemctl start docker &amp;&amp; systemctl enable docker 3.3 创建数据库存放文件夹1mkdir -p /opt/mysql 3.4 启动镜像123docker run -d --name=lepus -p 80:80 -p 3306:3306 \-v /opt/mysql:/var/lib/mysql -v /etc/timelocal:/etc/timelocal \georce/lepus 4 使用系统4.1 登陆系统123url:http://192.168.2.75/用户名：admin密码：Lepusadmin 4.2 登陆系统后界面示例截图展示 4.3 详细使用请参照官方文档 官方文档连接]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
       </tags>
   </entry>
   <entry>
