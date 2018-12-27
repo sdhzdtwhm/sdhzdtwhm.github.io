@@ -108,16 +108,23 @@
 
 
 
-  <meta name="description" content="所有的伟大，都源于一个勇敢的开始。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="杨航的博客">
-<meta property="og:url" content="https://sdhzdtwhm.github.io/archives/2018/index.html">
+  <meta name="description" content="1 介绍 top命令是Linux下常用的性能分析工具，能够实时显示系统中各个进程的资源占用状况。">
+<meta name="keywords" content="linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="top详解">
+<meta property="og:url" content="https://sdhzdtwhm.github.io/2018/12/27/top详解/index.html">
 <meta property="og:site_name" content="杨航的博客">
-<meta property="og:description" content="所有的伟大，都源于一个勇敢的开始。">
+<meta property="og:description" content="1 介绍 top命令是Linux下常用的性能分析工具，能够实时显示系统中各个进程的资源占用状况。">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://i.loli.net/2018/12/27/5c242f5c9905e.png">
+<meta property="og:image" content="https://i.loli.net/2018/12/27/5c242ff89b04f.png">
+<meta property="og:image" content="https://i.loli.net/2018/12/27/5c2437f684254.png">
+<meta property="og:image" content="https://i.loli.net/2018/12/27/5c2432f642d78.png">
+<meta property="og:updated_time" content="2018-12-27T02:43:37.880Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="杨航的博客">
-<meta name="twitter:description" content="所有的伟大，都源于一个勇敢的开始。">
+<meta name="twitter:title" content="top详解">
+<meta name="twitter:description" content="1 介绍 top命令是Linux下常用的性能分析工具，能够实时显示系统中各个进程的资源占用状况。">
+<meta name="twitter:image" content="https://i.loli.net/2018/12/27/5c242f5c9905e.png">
 
 
 
@@ -126,7 +133,7 @@
 
 
 
-  <link rel="canonical" href="https://sdhzdtwhm.github.io/archives/2018/">
+  <link rel="canonical" href="https://sdhzdtwhm.github.io/2018/12/27/top详解/">
 
 
 
@@ -136,7 +143,7 @@
   };
 </script>
 
-  <title>归档 | 杨航的博客</title>
+  <title>top详解 | 杨航的博客</title>
   
 
 
@@ -185,7 +192,7 @@
     
   
 
-  <div class="container sidebar-position-left page-archive">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
@@ -290,7 +297,7 @@
         
         
           
-          <li class="menu-item menu-item-archives menu-item-active">
+          <li class="menu-item menu-item-archives">
 
     
     
@@ -361,423 +368,477 @@
           
             
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
-
           
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
+  <div id="posts" class="posts-expand">
+    
 
-      
-      <span class="archive-page-counter">
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://sdhzdtwhm.github.io/2018/12/27/top详解/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="杨航">
+      <meta itemprop="description" content="所有的伟大，都源于一个勇敢的开始。">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="杨航的博客">
+    </span>
+
+    
+      <header class="post-header">
+
         
         
+          <h1 class="post-title" itemprop="name headline">top详解
+              
+            
+          </h1>
         
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-12-27 10:37:00 / 修改时间：10:43:37" itemprop="dateCreated datePublished" datetime="2018-12-27T10:37:00+08:00">2018-12-27</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
           
-        
-        嗯..! 目前共计 11 篇日志。 继续努力。
-      </span>
-      
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
 
-      
-
-        
-        
-        
-
-        
+                
+                
+              
+            </span>
           
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2018">2018</h1>
-          </div>
-        
-        
 
-        
+          
+            
+          
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
+          
+          
 
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/12/27/top详解/" itemprop="url">
-              
-                <span itemprop="name">top详解</span>
-              
-            </a>
-        
-      </h2>
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+          
+            <span class="post-meta-divider">|</span>
+            <span id="busuanzi_value_page_pv"></span>次阅读
+          
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-12-27T10:37:00+08:00" content="2018-12-27">
-          12-27
-        </time>
-      </div>
+          
 
-    </header>
-  </article>
+          
 
+        </div>
+      </header>
+    
 
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/12/26/fio使用详解/" itemprop="url">
-              
-                <span itemprop="name">fio使用详解</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-12-26T14:55:00+08:00" content="2018-12-26">
-          12-26
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/12/22/mysql5.6官方二进制解压版配置手册/" itemprop="url">
-              
-                <span itemprop="name">mysql5.6官方提供的二进制解压版的安装手册</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-12-22T13:10:06+08:00" content="2018-12-22">
-          12-22
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
       
 
-        
-        
-        
+      
+        <h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1 介绍"></a>1 介绍</h1><blockquote>
+<p>top命令是Linux下常用的性能分析工具，能够实时显示系统中各个进程的资源占用状况。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="2-详细介绍"><a href="#2-详细介绍" class="headerlink" title="2 详细介绍"></a>2 详细介绍</h1><h2 id="2-1-top命令运行图"><a href="#2-1-top命令运行图" class="headerlink" title="2.1 top命令运行图"></a>2.1 top命令运行图</h2><blockquote>
+<p>打开shell终端输入：top，即可显示下图</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/12/27/5c242f5c9905e.png" alt="top01.png" title="top01.png"></center>
 
-        
-        
+<h3 id="2-1-1-第一行-基本信息"><a href="#2-1-1-第一行-基本信息" class="headerlink" title="2.1.1 第一行-基本信息"></a>2.1.1 第一行-基本信息</h3><table>
+<thead>
+<tr>
+<th>信息栏 第一行</th>
+<th>含义（基本信息）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>top - 08:56:22</td>
+<td>当前时间:08:56:22</td>
+</tr>
+<tr>
+<td>up 23 days, 19:15,</td>
+<td>运行时间23天又19小时15分钟</td>
+</tr>
+<tr>
+<td>1 user,</td>
+<td>当前有一个登录用户</td>
+</tr>
+<tr>
+<td>load average: 0.00, 0.01, 0.05</td>
+<td>系统负载，三个数值分别为1分钟、5分钟、15分钟到现在的平均值</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>系统平均负载如何理解</p>
+<ol>
+<li>单核CPU - 单车道 - 数字在0.00-1.00之间正常</li>
+<li>多核CPU - 多车道 - 数字/CPU核数 在0.00-1.00之间正常</li>
+<li>安全的系统平均负载：单核负载在0.7以下是安全的,超过0.7就需要进行优化了</li>
+<li>应该看哪一个数字,1分钟,5分钟还是15分钟?：作者认为看5分钟和15分钟的比较好,即后面2个数字。</li>
+<li>怎样知道我的CPU是几核呢?：grep ‘model name’ /proc/cpuinfo | wc -l</li>
+</ol>
+</blockquote>
+<h3 id="2-1-2-第二行-任务信息"><a href="#2-1-2-第二行-任务信息" class="headerlink" title="2.1.2 第二行-任务信息"></a>2.1.2 第二行-任务信息</h3><table>
+<thead>
+<tr>
+<th>任务栏 第二行 Tasks</th>
+<th>含义（进程状况）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>92 total,</td>
+<td>总共有92个进程</td>
+</tr>
+<tr>
+<td>1 running,</td>
+<td>有一个正在运行的进程数</td>
+</tr>
+<tr>
+<td>91 sleeping,</td>
+<td>有91个睡眠状态的进程数</td>
+</tr>
+<tr>
+<td>0 stopped,</td>
+<td>停止的进程数</td>
+</tr>
+<tr>
+<td>0 zombie</td>
+<td>僵尸进程数</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>僵尸进程：表示已经终止，但仍然保留一些信息的进程。其等待父进程调用wait()，就可以从内存中完全移除。 将是进程无法使用 kill 清理。如果要手动清理僵尸进程，需要找到其父进程，kill掉父进程后，LInux的 init 进程将接管该僵尸进程(linux中所有的子进程都需要有父进程，当父进程被kill后，其所有子进程将过继给init进程)，init进程隔一段时间去调用wait(),来清除僵尸进程。 </p>
+</blockquote>
+<h3 id="2-1-3-第三行-CPU使用情况"><a href="#2-1-3-第三行-CPU使用情况" class="headerlink" title="2.1.3 第三行-CPU使用情况"></a>2.1.3 第三行-CPU使用情况</h3><table>
+<thead>
+<tr>
+<th>信息栏 第三行 %CPU（s）</th>
+<th>含义（表示占用CPU的百分比）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.0 us,</td>
+<td>User Time， CPU执行用户进程百分比，包括Nice Time</td>
+</tr>
+<tr>
+<td>0.0 sy,</td>
+<td>System Time, CPU在内核运行百分比，包括IRQ和SoftIRQ</td>
+</tr>
+<tr>
+<td>0.0 ni,</td>
+<td>Nice Time，调整进程优先级所占百分比</td>
+</tr>
+<tr>
+<td>100.0 id,</td>
+<td>Idle Time，系统空闲百分比</td>
+</tr>
+<tr>
+<td>0.0 wa,</td>
+<td>Waiting Time，CPU等待I/O完成所有百分比</td>
+</tr>
+<tr>
+<td>0.0 hi,</td>
+<td>Hard IRQ Time，硬中断占用的CPU时间百分比</td>
+</tr>
+<tr>
+<td>0.0 si,</td>
+<td>Soft IRQ Time，软中断占用CPU时间百分比</td>
+</tr>
+<tr>
+<td>0.0 st</td>
+<td>Steal Time,虚拟服务占用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-1-4-第四行-物理内存使用情况"><a href="#2-1-4-第四行-物理内存使用情况" class="headerlink" title="2.1.4 第四行-物理内存使用情况"></a>2.1.4 第四行-物理内存使用情况</h3><table>
+<thead>
+<tr>
+<th>信息栏 第四行 KiB Mem</th>
+<th>含义（内存使用信息）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3881804 total,</td>
+<td>总物理内存</td>
+</tr>
+<tr>
+<td>2477576 free,</td>
+<td>空闲的物理内存</td>
+</tr>
+<tr>
+<td>723436 used,</td>
+<td>已使用的</td>
+</tr>
+<tr>
+<td>680792 buff/cache</td>
+<td>缓冲区和缓存区占用内存的总量</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">buff/cache：</span><br><span class="line">buffers 和 cache 都是内存中存放的数据，不同的是，buffers 存放的是准备写入磁盘的数据，而 cache 存放的是从磁盘中读取的数据 。</span><br><span class="line">在Linux系统中，有一个守护进程(daemon)会定期把buffers中的数据写入的磁盘，也可以使用 sync 命令手动把buffers中的数据写入磁盘。使用buffers可以把分散的 I/O 操作集中起来，减少了磁盘寻道的时间和磁盘碎片。 </span><br><span class="line">cache是Linux把读取频率高的数据，放到内存中，减少I/O。Linux中cache没有固定大小，根据使用情况自动增加或删除。</span><br><span class="line"></span><br><span class="line"># 手动把buffers写入硬盘并清空cache</span><br><span class="line">sync &amp;&amp; echo 3 &gt; /proc/sys/vm/drop_caches</span><br></pre></td></tr></table></figure>
+<h3 id="2-1-5-第五行-交换区使用情况"><a href="#2-1-5-第五行-交换区使用情况" class="headerlink" title="2.1.5 第五行-交换区使用情况"></a>2.1.5 第五行-交换区使用情况</h3><table>
+<thead>
+<tr>
+<th>信息栏 第五行 KiB Swap</th>
+<th>含义（交换区使用信息）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4194300 total,</td>
+<td>交换区的总量</td>
+</tr>
+<tr>
+<td>4194300 free,</td>
+<td>未使用的量</td>
+</tr>
+<tr>
+<td>0 used.</td>
+<td>已使用的量</td>
+</tr>
+<tr>
+<td>2909264 avail Mem</td>
+<td>可用的内存量</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Swap(内存交换区)：</span><br><span class="line">是硬盘上的一块空间。在内存不足的情况下，操作系统把内存中不用的数据存到硬盘的交换区，腾出内存来让别的程序运行。因此，开启swap会一定程度的引起 I/O 性能下降(阿里服务器默认不开)。</span><br></pre></td></tr></table></figure>
+<h3 id="2-1-6-第六行-进程详细信息"><a href="#2-1-6-第六行-进程详细信息" class="headerlink" title="2.1.6 第六行-进程详细信息"></a>2.1.6 第六行-进程详细信息</h3><table>
+<thead>
+<tr>
+<th>信息栏 第六行</th>
+<th>含义（进程信息统计）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PID</td>
+<td>进程ID</td>
+</tr>
+<tr>
+<td>USER</td>
+<td>进程所有者的用户名</td>
+</tr>
+<tr>
+<td>PR</td>
+<td>优先级-</td>
+</tr>
+<tr>
+<td>NI</td>
+<td>nice值</td>
+</tr>
+<tr>
+<td>VIRT</td>
+<td>进程使用的虚拟内存总量，单位kb</td>
+</tr>
+<tr>
+<td>RES</td>
+<td>进程使用的，未被换出的物理内存大小，单位kb</td>
+</tr>
+<tr>
+<td>SHR</td>
+<td>共享内存大小，单位kb</td>
+</tr>
+<tr>
+<td>S</td>
+<td>进程状态（D:不可终端的睡眠状态，R：运行，S:睡眠，T:跟踪/停止，Z：僵尸进程）</td>
+</tr>
+<tr>
+<td>%CPU</td>
+<td>上次更新到现在的CPU时间占用比</td>
+</tr>
+<tr>
+<td>%MEM</td>
+<td>进程使用的物理内存百分比</td>
+</tr>
+<tr>
+<td>TIME+</td>
+<td>进程使用的CPU时间总计，单位1/100秒</td>
+</tr>
+<tr>
+<td>COMMAND</td>
+<td>命令名/命令行</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-2-top的用法"><a href="#2-2-top的用法" class="headerlink" title="2.2 top的用法"></a>2.2 top的用法</h2><h3 id="2-2-1-命令行方式使用"><a href="#2-2-1-命令行方式使用" class="headerlink" title="2.2.1 命令行方式使用"></a>2.2.1 命令行方式使用</h3><ul>
+<li>-b:以批处理模式操作 这种方式可以把top输出的内容已可读的形式写入文件top -b &gt;&gt; top.txt</li>
+<li>-c:显示完整的命令行(COMMAND)，想查看进程执行的具体位置时 非常有用</li>
+<li>-d:屏幕刷新间隔时间 top -d 1:表示每隔一秒刷新一次</li>
+<li>-s:使用保密模式</li>
+<li>-S：使用累计模式</li>
+<li>-i:不显示任何闲置或者僵尸进程</li>
+<li>-u&lt;用户名&gt;：指定用户名</li>
+<li>-p&lt;进程号&gt;：指定进程</li>
+<li>-n&lt;次数&gt;：指定循环显示的次数，到了次数自动退出</li>
+</ul>
+<h3 id="2-2-2-交互式使用"><a href="#2-2-2-交互式使用" class="headerlink" title="2.2.2 交互式使用"></a>2.2.2 交互式使用</h3><blockquote>
+<p>top命令显示系统实时状态，支持交互操作。执行top命令，显示系统状态界面（同时也是交互界面），输入交互命令：</p>
+</blockquote>
+<ul>
+<li>1：查看CPU每个核的使用情况 <center><img src="https://i.loli.net/2018/12/27/5c242ff89b04f.png" alt="2.png" title="2.png"></center></li>
+<li>h：显示帮助画面，给出一些简短的命令总结说明 </li>
+<li>k：终止一个进程 </li>
+<li>i：忽略闲置和僵死进程，这是一个开关式命令 </li>
+<li>q：退出程序 </li>
+<li>r：重新安排一个进程的优先级别 </li>
+<li>S：切换到累计模式 </li>
+<li>s：改变两次刷新之间的延迟时间（单位为s），如果有小数，就换算成ms。输入0值则系统将不断刷新，默认值是5s </li>
+<li>l：切换显示平均负载和启动时间信息 </li>
+<li>m：切换显示内存信息 </li>
+<li>t：切换显示进程和CPU状态信息 </li>
+<li>c：切换显示命令名称和完整命令行 </li>
+<li>M：根据驻留内存大小进行排序 </li>
+<li>P：根据CPU使用百分比大小进行排序 </li>
+<li>T：根据时间/累计时间进行排序 </li>
+<li>w：将当前设置写入~/.toprc文件中。</li>
+<li>f: 可以自定义想要查看的进程信息<blockquote>
+<p>通过键盘向右键可以选择，向左键取消选择，通过向上向下键移动位置，空格键进行选择是否展示，q键或esc键退出</p>
+</blockquote>
+<center><img src="https://i.loli.net/2018/12/27/5c2437f684254.png" alt="4.png" title="4.png"></center>
 
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/12/20/lepus数据库监控系统使用/" itemprop="url">
-              
-                <span itemprop="name">lepus数据库监控系统快速使用</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-12-20T08:26:08+08:00" content="2018-12-20">
-          12-20
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
+</li>
+</ul>
+<h3 id="2-2-3-其它用法"><a href="#2-2-3-其它用法" class="headerlink" title="2.2.3 其它用法"></a>2.2.3 其它用法</h3><ol>
+<li>使用top查看某一进程的线程<center><img src="https://i.loli.net/2018/12/27/5c2432f642d78.png" alt="3.png" title="3.png"></center></li>
+</ol>
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/12/05/mysql配置文件示例/" itemprop="url">
-              
-                <span itemprop="name">mysql配置文件示例</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-12-05T13:57:06+08:00" content="2018-12-05">
-          12-05
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/12/04/xtrabackup使用/" itemprop="url">
-              
-                <span itemprop="name">xtrabackup备份使用指南</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-12-04T11:26:07+08:00" content="2018-12-04">
-          12-04
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/12/02/mysql常用统计sql/" itemprop="url">
-              
-                <span itemprop="name">mysql常用统计sql</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-12-02T13:51:06+08:00" content="2018-12-02">
-          12-02
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/12/01/CDH5.11.2快速配置文档/" itemprop="url">
-              
-                <span itemprop="name">cdh5.11.2快速配置文档</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-12-01T11:30:06+08:00" content="2018-12-01">
-          12-01
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/12/01/mysql版本升级/" itemprop="url">
-              
-                <span itemprop="name">mysql的版本升级</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-12-01T11:26:08+08:00" content="2018-12-01">
-          12-01
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/11/01/MHA入门实战/" itemprop="url">
-              
-                <span itemprop="name">mha入门实战</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-11-01T09:39:06+08:00" content="2018-11-01">
-          11-01
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
     </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+       
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/26/fio使用详解/" rel="next" title="fio使用详解">
+                <i class="fa fa-chevron-left"></i> fio使用详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
-
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/archives/2018/page/2/">2</a><a class="extend next" rel="next" href="/archives/2018/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
-  </nav>
+  </article>
 
 
+  </div>
 
 
           </div>
           
+
+  
+
+
 
         </div>
         
@@ -798,8 +859,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -890,6 +960,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-介绍"><span class="nav-number">1.</span> <span class="nav-text">1 介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-详细介绍"><span class="nav-number">2.</span> <span class="nav-text">2 详细介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-top命令运行图"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 top命令运行图</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-第一行-基本信息"><span class="nav-number">2.1.1.</span> <span class="nav-text">2.1.1 第一行-基本信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-第二行-任务信息"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.1.2 第二行-任务信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3-第三行-CPU使用情况"><span class="nav-number">2.1.3.</span> <span class="nav-text">2.1.3 第三行-CPU使用情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-4-第四行-物理内存使用情况"><span class="nav-number">2.1.4.</span> <span class="nav-text">2.1.4 第四行-物理内存使用情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-5-第五行-交换区使用情况"><span class="nav-number">2.1.5.</span> <span class="nav-text">2.1.5 第五行-交换区使用情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-6-第六行-进程详细信息"><span class="nav-number">2.1.6.</span> <span class="nav-text">2.1.6 第六行-进程详细信息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-top的用法"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 top的用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-命令行方式使用"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1 命令行方式使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-交互式使用"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2.2 交互式使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-其它用法"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.2.3 其它用法</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -1060,6 +1146,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.6.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.6.0"></script>
+
+
 
   
 

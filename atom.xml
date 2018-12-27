@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sdhzdtwhm.github.io/"/>
-  <updated>2018-12-22T05:17:19.808Z</updated>
+  <updated>2018-12-27T02:43:37.880Z</updated>
   <id>https://sdhzdtwhm.github.io/</id>
   
   <author>
@@ -15,6 +15,50 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>top详解</title>
+    <link href="https://sdhzdtwhm.github.io/2018/12/27/top%E8%AF%A6%E8%A7%A3/"/>
+    <id>https://sdhzdtwhm.github.io/2018/12/27/top详解/</id>
+    <published>2018-12-27T02:37:00.000Z</published>
+    <updated>2018-12-27T02:43:37.880Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;1-介绍&quot;&gt;&lt;a href=&quot;#1-介绍&quot; class=&quot;headerlink&quot; title=&quot;1 介绍&quot;&gt;&lt;/a&gt;1 介绍&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;top命令是Linux下常用的性能分析工具，能够实时显示系统中各个进程的资源占用状况。&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="linux" scheme="https://sdhzdtwhm.github.io/categories/linux/"/>
+    
+    
+      <category term="linux" scheme="https://sdhzdtwhm.github.io/tags/linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>fio使用详解</title>
+    <link href="https://sdhzdtwhm.github.io/2018/12/26/fio%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3/"/>
+    <id>https://sdhzdtwhm.github.io/2018/12/26/fio使用详解/</id>
+    <published>2018-12-26T06:55:00.000Z</published>
+    <updated>2018-12-27T02:42:27.731Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;1-介绍&quot;&gt;&lt;a href=&quot;#1-介绍&quot; class=&quot;headerlink&quot; title=&quot;1 介绍&quot;&gt;&lt;/a&gt;1 介绍&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;本文用来介绍fio软件的使用。&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="linux" scheme="https://sdhzdtwhm.github.io/categories/linux/"/>
+    
+    
+      <category term="linux" scheme="https://sdhzdtwhm.github.io/tags/linux/"/>
+    
+  </entry>
   
   <entry>
     <title>mysql5.6官方提供的二进制解压版的安装手册</title>
